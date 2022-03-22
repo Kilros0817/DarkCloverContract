@@ -63,7 +63,7 @@ contract CloverDarkSeedToken is IBEP20, Auth, Pausable {
     address private marketingAddress;
     address private teamAddress;
     address private devAddress = 0xa80eF6b4B376CcAcBD23D8c9AB22F01f2E8bbAF5;
-    uint256 public releaseDuration = 30 minutes;
+    uint256 public releaseDuration = 1 minutes;
     uint256 public releaseTimeStamp = 0;
 
     bool public isNoNFTFeeWillTake = true;
@@ -74,7 +74,7 @@ contract CloverDarkSeedToken is IBEP20, Auth, Pausable {
     uint256 public swapThreshold = _totalSupply / 20000; // 0.3%
 
     event SwapedTokenForEth(uint256 TokenAmount);
-    event SwapAndLiquify(uint256 tokensSwapped, uint256 bnbReceived, uint256 tokensIntoLiquidity);
+    event AddLiquify(uint256 bnbAmount, uint256 tokensIntoLiquidity);
 
     IUniswapV2Router02 public router;
     address public pair;
@@ -151,6 +151,10 @@ contract CloverDarkSeedToken is IBEP20, Auth, Pausable {
         if (inSwap) { return _basicTransfer(sender, recipient, amount);}
 
         checkTxLimit(sender, amount);
+
+        if (!inSwap && (block.timestamp - releaseTimeStamp >= releaseDuration)) {
+            swapFee();
+        }
         
         if (recipient != pair) {
             require(isTxLimitExempt[recipient] || _balances[recipient] + amount <= _maxWalletSize 
@@ -182,10 +186,6 @@ contract CloverDarkSeedToken is IBEP20, Auth, Pausable {
                     amountReceived = shouldTakeFee(sender) ? collectFee(sender, amount) : amount;
                 }
             }
-        }
-        
-        if (!inSwap && (block.timestamp - releaseTimeStamp >= releaseDuration)) {
-            swapFee();
         }
 
         _balances[sender] = _balances[sender].sub(amount, "Insufficient Balance");
@@ -399,29 +399,6 @@ contract CloverDarkSeedToken is IBEP20, Auth, Pausable {
         emit SwapedTokenForEth(amount);
     }
 
-    function swapAndLiquify(uint256 amount) private {
-        // split the contract balance into halves
-        uint256 half = amount.div(2);
-        uint256 otherHalf = amount.sub(half);
-
-        // capture the contract's current BNB balance.
-        // this is so that we can capture exactly the amount of BNB that the
-        // swap creates, and not make the liquidity event include any BNB that
-        // has been manually sent to the contract
-        uint256 initialBalance = address(this).balance;
-
-        // swap tokens for BNB
-        swapTokensForBnb(half, address(this));
-
-        // how much BNB did we just swap into?
-        uint256 newBalance = address(this).balance.sub(initialBalance);
-
-        // add liquidity to uniswap
-        addLiquidity(otherHalf, newBalance);
-
-        emit SwapAndLiquify(half, newBalance, otherHalf);
-    }
-
     function getLiquiditySupply() private view returns (uint112) {
         require (pair != ZERO, "Please set pair...");
         (, uint112 _reserve1,) = IUniswapV2Pair(pair).getReserves();
@@ -439,6 +416,8 @@ contract CloverDarkSeedToken is IBEP20, Auth, Pausable {
             owner,
             block.timestamp
         );
+
+        emit AddLiquify(bnbAmount, tokenAmount);
     }
 
     // function to allow admin to set all fees..

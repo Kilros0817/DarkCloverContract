@@ -8,33 +8,33 @@ async function main() {
 
 
     const seedFT = await ethers.getContractFactory("CloverDarkSeedToken");
-    const seedNFT = await ethers.getContractFactory("CloverDarkSeedNFT");
-    const seedController = await ethers.getContractFactory("CloverDarkSeedController");
-    const seedPicker= await ethers.getContractFactory("CloverDarkSeedPicker");
-    const seedStake= await ethers.getContractFactory("CloverDarkSeedStake" ,{
-      libraries: {
-        IterableMapping: "0x267f604461E0D879d46B328fa70e95A0298be8A3",
-      }
-    });
+    // const seedNFT = await ethers.getContractFactory("CloverDarkSeedNFT");
+    // const seedController = await ethers.getContractFactory("CloverDarkSeedController");
+    // const seedPicker= await ethers.getContractFactory("CloverDarkSeedPicker");
+    // const seedStake= await ethers.getContractFactory("CloverDarkSeedStake" ,{
+    //   libraries: {
+    //     IterableMapping: "0x267f604461E0D879d46B328fa70e95A0298be8A3",
+    //   }
+    // });
 
     const seedFTContract = await seedFT.deploy(team_address, marketing_address);
     console.log("Clover_Seeds_Token deployed to:", seedFTContract.address);
     const seedFT_address = seedFTContract.address;
 
-    const seedNFTContract = await seedNFT.deploy(seedFT_address);
-    console.log("Clover_Seeds_NFT deployed to:", seedNFTContract.address);
-    const seedNFT_address = seedNFTContract.address;
+    // const seedNFTContract = await seedNFT.deploy(seedFT_address);
+    // console.log("Clover_Seeds_NFT deployed to:", seedNFTContract.address);
+    // const seedNFT_address = seedNFTContract.address;
 
-    const seedControllerContract = await seedController.deploy(team_address, seedFT_address, seedNFT_address) ;
-    console.log("Clover_Seeds_Controller deployed to:", seedControllerContract.address);
-    const seedController_address = seedControllerContract.address;
+    // const seedControllerContract = await seedController.deploy(team_address, seedFT_address, seedNFT_address) ;
+    // console.log("Clover_Seeds_Controller deployed to:", seedControllerContract.address);
+    // const seedController_address = seedControllerContract.address;
 
-    const seedPickerContract = await seedPicker.deploy(seedNFT_address, seedController_address) ;
-    console.log("Clover_Seeds_Picker deployed to:", seedPickerContract.address);
-    const seedPicker_address = seedPickerContract.address;
+    // const seedPickerContract = await seedPicker.deploy(seedNFT_address, seedController_address) ;
+    // console.log("Clover_Seeds_Picker deployed to:", seedPickerContract.address);
+    // const seedPicker_address = seedPickerContract.address;
 
-    const seedStakeContract = await seedStake.deploy(marketing_address, seedFT_address, seedNFT_address, seedController_address, seedPicker_address);
-    console.log("Clover_Seeds_Stake deployed to:", seedStakeContract.address);
+    // const seedStakeContract = await seedStake.deploy(marketing_address, seedFT_address, seedNFT_address, seedController_address, seedPicker_address);
+    // console.log("Clover_Seeds_Stake deployed to:", seedStakeContract.address);
 
 }
 
