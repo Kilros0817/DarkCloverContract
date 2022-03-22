@@ -69,8 +69,6 @@ contract CloverDarkSeedController is Ownable {
     mapping(uint256 => bool) private isCloverPotDiamond;
     
     mapping (address => uint256) public stakingTime;
-    mapping (address => uint256) public totalDepositedTokens;
-    mapping (address => uint256) public totalEarnedTokens;
     mapping (address => uint256) public lastClaimedTime;
 
     mapping(uint256 => address) private _owners;
