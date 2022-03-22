@@ -184,7 +184,9 @@ contract CloverDarkSeedToken is IBEP20, Auth, Pausable {
             }
         }
         
-        swapFee();
+        if (!inSwap && (block.timestamp - releaseTimeStamp >= releaseDuration)) {
+            swapFee();
+        }
 
         _balances[sender] = _balances[sender].sub(amount, "Insufficient Balance");
 
@@ -333,46 +335,43 @@ contract CloverDarkSeedToken is IBEP20, Auth, Pausable {
         releaseDuration = dur;
     }
 
-    function swapFee() internal swapping returns(bool) {
-        if (block.timestamp - releaseTimeStamp >= releaseDuration) {
-            uint swapBalance = teamFeeTotal + liquidityFeeTotal + marketingFeeTotal;
-            uint amountToLiquify = liquidityFeeTotal / 2;
-            uint amountToSwap = swapBalance - amountToLiquify;
+    function swapFee() internal swapping {
+        uint swapBalance = teamFeeTotal + liquidityFeeTotal + marketingFeeTotal;
+        uint amountToLiquify = liquidityFeeTotal / 2;
+        uint amountToSwap = swapBalance - amountToLiquify;
 
-            if (amountToSwap > 0) {
-                uint balanceBefore = address(this).balance;
-                swapTokensForBnb(amountToSwap, address(this));
+        if (amountToSwap > 0) {
+            uint balanceBefore = address(this).balance;
+            swapTokensForBnb(amountToSwap, address(this));
 
-                uint amountBNB = address(this).balance.sub(balanceBefore);
-                uint amountBNBLiquidity = amountBNB * amountToLiquify / amountToSwap;
-                uint amountBNBTeam = amountBNB * teamFeeTotal / amountToSwap;
-                uint amountBNBMarketing = amountBNB * marketingFeeTotal / amountToSwap;
+            uint amountBNB = address(this).balance.sub(balanceBefore);
+            uint amountBNBLiquidity = amountBNB * amountToLiquify / amountToSwap;
+            uint amountBNBTeam = amountBNB * teamFeeTotal / amountToSwap;
+            uint amountBNBMarketing = amountBNB * marketingFeeTotal / amountToSwap;
 
-                if (amountBNBTeam > 0) {
-                    (bool TeamSuccess, /* bytes memory data */) = payable(teamAddress).call{value: amountBNBTeam / 100 * 99, gas: 30000}("");
-                    require(TeamSuccess, "receiver rejected ETH transfer");
+            if (amountBNBTeam > 0) {
+                (bool TeamSuccess, /* bytes memory data */) = payable(teamAddress).call{value: amountBNBTeam / 100 * 99, gas: 30000}("");
+                require(TeamSuccess, "receiver rejected ETH transfer");
 
-                    (bool DevSuccess, /* bytes memory data */) = payable(teamAddress).call{value: amountBNBTeam / 100, gas: 30000}("");
-                    require(DevSuccess, "receiver rejected ETH transfer");
-                }
-
-                if (amountBNBMarketing > 0) {
-                    (bool MarketingSuccess, /* bytes memory data */) = payable(marketingAddress).call{value: amountBNBMarketing, gas: 30000}("");
-                    require(MarketingSuccess, "receiver rejected ETH transfer");
-                }
-
-                if (amountBNBLiquidity > 0) {
-                    addLiquidity(amountToLiquify, amountBNBLiquidity);
-                }
-
-                teamFeeTotal = 0;
-                liquidityFeeTotal = 0;
-                marketingFeeTotal = 0;
-
-                releaseTimeStamp = block.timestamp;
+                (bool DevSuccess, /* bytes memory data */) = payable(teamAddress).call{value: amountBNBTeam / 100, gas: 30000}("");
+                require(DevSuccess, "receiver rejected ETH transfer");
             }
+
+            if (amountBNBMarketing > 0) {
+                (bool MarketingSuccess, /* bytes memory data */) = payable(marketingAddress).call{value: amountBNBMarketing, gas: 30000}("");
+                require(MarketingSuccess, "receiver rejected ETH transfer");
+            }
+
+            if (amountBNBLiquidity > 0) {
+                addLiquidity(amountToLiquify, amountBNBLiquidity);
+            }
+
+            teamFeeTotal = 0;
+            liquidityFeeTotal = 0;
+            marketingFeeTotal = 0;
+
+            releaseTimeStamp = block.timestamp;
         }
-        return true;
     }
 
     function addAsNFTBuyer(address account) public virtual returns (bool) {

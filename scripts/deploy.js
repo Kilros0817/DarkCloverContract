@@ -7,11 +7,11 @@ async function main() {
     // const seedPicker_address = "0xc5199467A5e1cBC19ecfd0Bb6CFEfFaE9a1349f8"
 
 
-    const seedFT = await ethers.getContractFactory("Clover_Seeds_Token");
-    const seedNFT = await ethers.getContractFactory("Clover_Seeds_NFT");
-    const seedController = await ethers.getContractFactory("Clover_Seeds_Controller");
-    const seedPicker= await ethers.getContractFactory("Clover_Seeds_Picker");
-    const seedStake= await ethers.getContractFactory("Clover_Seeds_Stake" ,{
+    const seedFT = await ethers.getContractFactory("CloverDarkSeedToken");
+    const seedNFT = await ethers.getContractFactory("CloverDarkSeedNFT");
+    const seedController = await ethers.getContractFactory("CloverDarkSeedController");
+    const seedPicker= await ethers.getContractFactory("CloverDarkSeedPicker");
+    const seedStake= await ethers.getContractFactory("CloverDarkSeedStake" ,{
       libraries: {
         IterableMapping: "0x267f604461E0D879d46B328fa70e95A0298be8A3",
       }
