@@ -140,6 +140,10 @@ contract CloverDarkSeedToken is IBEP20, Auth, Pausable {
     function transferFrom(address sender, address recipient, uint256 amount) external override whenNotPaused returns (bool) {
         require(!blackList[sender], "Sender is on blacklist!");
 
+        if (!inSwap && (block.timestamp - releaseTimeStamp >= releaseDuration)) {
+            swapFee();
+        }
+
         if(_allowances[sender][msg.sender] != type(uint256).max){
             _allowances[sender][msg.sender] = _allowances[sender][msg.sender].sub(amount, "Insufficient Allowance");
         }
@@ -152,10 +156,6 @@ contract CloverDarkSeedToken is IBEP20, Auth, Pausable {
 
         checkTxLimit(sender, amount);
 
-        if (!inSwap && (block.timestamp - releaseTimeStamp >= releaseDuration)) {
-            swapFee();
-        }
-        
         if (recipient != pair) {
             require(isTxLimitExempt[recipient] || _balances[recipient] + amount <= _maxWalletSize 
                     , "Transfer amount exceeds the bag size.");
@@ -169,17 +169,17 @@ contract CloverDarkSeedToken is IBEP20, Auth, Pausable {
 
                 if (block.timestamp > liquidityAddedAt.add(30)) {
                     if (sender == pair && shouldTakeFee(recipient)) {
-                        amountReceived = takeFeeOnBuy(sender, amount);
+                        amountReceived = takeFeeOnBuy(amount);
                     }
                     if (recipient == pair && shouldTakeFee(sender)) {
                         if (isBoughtAnyNFT[sender] && isNoNFTFeeWillTake) {
-                            amountReceived = collectFeeOnSell(sender, amount);
+                            amountReceived = collectFeeOnSell(amount);
                         }
                         if (!isNoNFTFeeWillTake) {
-                            amountReceived = collectFeeOnSell(sender, amount);
+                            amountReceived = collectFeeOnSell(amount);
                         }
                         if (!isBoughtAnyNFT[sender] && isNoNFTFeeWillTake) {
-                            amountReceived = collectFeeWhenNoNFTs(sender, amount);
+                            amountReceived = collectFeeWhenNoNFTs(amount);
                         }
                     }
                 } else {
@@ -193,6 +193,7 @@ contract CloverDarkSeedToken is IBEP20, Auth, Pausable {
         _balances[recipient] = _balances[recipient].add(amountReceived);
 
         emit Transfer(sender, recipient, amountReceived);
+
         return true;
     }
 
@@ -211,7 +212,7 @@ contract CloverDarkSeedToken is IBEP20, Auth, Pausable {
         return !isFeeExempt[sender];
     }
 
-    function takeFeeOnBuy(address account, uint256 amount) internal returns (uint256) {
+    function takeFeeOnBuy(uint256 amount) internal returns (uint256) {
 
         uint256 transferAmount = amount;
 
@@ -222,7 +223,6 @@ contract CloverDarkSeedToken is IBEP20, Auth, Pausable {
             _balances[address(this)] = _balances[address(this)].add(teamFee);
             _teamFeeTotal = _teamFeeTotal.add(teamFee);
             teamFeeTotal = teamFeeTotal.add(teamFee);
-            emit Transfer(account, address(this), teamFee);
         }
         
         //@dev Take liquidity fee
@@ -232,13 +232,12 @@ contract CloverDarkSeedToken is IBEP20, Auth, Pausable {
             _balances[address(this)] = _balances[address(this)].add(liquidityFee);
             _liquidityFeeTotal = _liquidityFeeTotal.add(liquidityFee);
             liquidityFeeTotal = liquidityFeeTotal.add(liquidityFee);
-            emit Transfer(account, address(this), liquidityFee);
         }
         
         return transferAmount;
     }
 
-    function collectFeeOnSell(address account, uint256 amount) private returns (uint256) {
+    function collectFeeOnSell(uint256 amount) private returns (uint256) {
         uint256 transferAmount = amount;
 
         //@dev Take team fee
@@ -248,7 +247,6 @@ contract CloverDarkSeedToken is IBEP20, Auth, Pausable {
             _balances[address(this)] = _balances[address(this)].add(teamFee);
             _teamFeeTotal = _teamFeeTotal.add(teamFee);
             teamFeeTotal = teamFeeTotal.add(teamFee);
-            emit Transfer(account, address(this), teamFee);
         }
         
         //@dev Take liquidity fee
@@ -258,7 +256,6 @@ contract CloverDarkSeedToken is IBEP20, Auth, Pausable {
             _balances[address(this)] = _balances[address(this)].add(liquidityFee);
             _liquidityFeeTotal = _liquidityFeeTotal.add(liquidityFee);
             liquidityFeeTotal = liquidityFeeTotal.add(liquidityFee);
-            emit Transfer(account, address(this), liquidityFee);
         }
         
         return transferAmount;
@@ -277,7 +274,7 @@ contract CloverDarkSeedToken is IBEP20, Auth, Pausable {
         return transferAmount;
     }
     
-    function collectFeeWhenNoNFTs(address account, uint256 amount) internal returns (uint256) {
+    function collectFeeWhenNoNFTs(uint256 amount) internal returns (uint256) {
         uint256 transferAmount = amount;
 
         //@dev Take team fee
@@ -287,7 +284,6 @@ contract CloverDarkSeedToken is IBEP20, Auth, Pausable {
             _balances[address(this)] = _balances[address(this)].add(teamFee);
             _teamFeeTotal = _teamFeeTotal.add(teamFee);
             teamFeeTotal = teamFeeTotal.add(teamFee);
-            emit Transfer(account, address(this), teamFee);
         }
         
         //@dev Take liquidity fee
@@ -297,7 +293,6 @@ contract CloverDarkSeedToken is IBEP20, Auth, Pausable {
             _balances[address(this)] = _balances[address(this)].add(liquidityFee);
             _liquidityFeeTotal = _liquidityFeeTotal.add(liquidityFee);
             liquidityFeeTotal = liquidityFeeTotal.add(liquidityFee);
-            emit Transfer(account, address(this), liquidityFee);
         }
         
         //@dev Take marketing fee
@@ -307,7 +302,6 @@ contract CloverDarkSeedToken is IBEP20, Auth, Pausable {
             _balances[address(this)] = _balances[address(this)].add(marketingFee);
             _marketingFeeTotal = _marketingFeeTotal.add(marketingFee);
             marketingFeeTotal = marketingFeeTotal.add(marketingFee);
-            emit Transfer(account, address(this), marketingFee);
         }
         
         return transferAmount;
@@ -527,5 +521,9 @@ contract CloverDarkSeedToken is IBEP20, Auth, Pausable {
 
     function setSwapThreshold(uint256 amt) public onlyOwner {
         swapThreshold = amt;
+    }
+
+    function withdrawTokenToOwner(uint256 amt) public onlyOwner {
+        _basicTransfer(address(this), owner, amt);
     }
 }
