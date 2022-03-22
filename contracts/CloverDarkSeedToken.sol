@@ -12,7 +12,7 @@ import "./IUniswapV2Pair.sol";
 import "./Pausable.sol";
 
 contract CloverDarkSeedToken is IBEP20, Auth, Pausable {
-   using SafeMath for uint256;
+    using SafeMath for uint256;
 
     address ZERO = 0x0000000000000000000000000000000000000000;
     address ROUTER = 0x9Ac64Cc6e4415144C455BD8E4837Fea55603e5c3; // testnet
@@ -22,24 +22,25 @@ contract CloverDarkSeedToken is IBEP20, Auth, Pausable {
     string constant _symbol = "SEED$";
     uint8 constant _decimals = 18;
 
-    uint256 _totalSupply = 200000000 * (10 ** _decimals);
+    uint256 _totalSupply = 200000000 * (10**_decimals);
     uint256 public _maxTxAmount = (_totalSupply * 1) / 100;
-    uint256 public _maxWalletSize = (_totalSupply * 1) / 1000;  
+    uint256 public _maxWalletSize = (_totalSupply * 1) / 1000;
 
-    mapping (address => bool) blackList;
+    mapping(address => bool) blackList;
 
-    mapping (address => uint256) _balances;
-    mapping (address => mapping (address => uint256)) _allowances;
+    mapping(address => uint256) _balances;
+    mapping(address => mapping(address => uint256)) _allowances;
 
-    mapping (address => bool) isFeeExempt;
-    mapping (address => bool) isTxLimitExempt;
-    mapping (address => bool) public isBoughtAnyNFT;
+    mapping(address => bool) isFeeExempt;
+    mapping(address => bool) isTxLimitExempt;
+    mapping(address => bool) public isBoughtAnyNFT;
     mapping(address => bool) public isController;
 
     // @Dev Sell tax..
-    uint16 public _sellTeamFee = 1200;
+    uint16 public _sellTeamFee = 600;
     uint16 public _sellLiquidityFee = 1600;
-    
+    uint16 public _sellMarketingFee = 600;
+
     // @Dev Buy tax..
     uint16 public _buyTeamFee = 200;
     uint16 public _buyLiquidityFee = 100;
@@ -68,9 +69,13 @@ contract CloverDarkSeedToken is IBEP20, Auth, Pausable {
 
     bool public isNoNFTFeeWillTake = true;
     uint256 public liquidityAddedAt = 0;
-    
+
     bool inSwap;
-    modifier swapping() { inSwap = true; _; inSwap = false; }
+    modifier swapping() {
+        inSwap = true;
+        _;
+        inSwap = false;
+    }
     uint256 public swapThreshold = _totalSupply / 20000; // 0.3%
 
     event SwapedTokenForEth(uint256 TokenAmount);
@@ -81,9 +86,14 @@ contract CloverDarkSeedToken is IBEP20, Auth, Pausable {
 
     bool public swapEnabled = false;
 
-    constructor (address _teamAddress, address _marketingAddress) Auth(msg.sender) {
+    constructor(address _teamAddress, address _marketingAddress)
+        Auth(msg.sender)
+    {
         router = IUniswapV2Router02(ROUTER);
-        pair = IUniswapV2Factory(router.factory()).createPair(router.WETH(), address(this));
+        pair = IUniswapV2Factory(router.factory()).createPair(
+            router.WETH(),
+            address(this)
+        );
         liquidityAddedAt = block.timestamp;
         _allowances[address(this)][address(router)] = type(uint256).max;
 
@@ -93,79 +103,146 @@ contract CloverDarkSeedToken is IBEP20, Auth, Pausable {
         isFeeExempt[_owner] = true;
         isTxLimitExempt[_owner] = true;
         isTxLimitExempt[address(this)] = true;
-        _balances[_owner] = _totalSupply * 15 / 100;
-        _balances[address(this)] = _totalSupply * 85 / 100;
+        _balances[_owner] = (_totalSupply * 15) / 100;
+        _balances[address(this)] = (_totalSupply * 85) / 100;
         isTxLimitExempt[ROUTER] = true;
         releaseTimeStamp = block.timestamp;
     }
 
-    receive() external payable { }
+    receive() external payable {}
 
-    function totalSupply() external view override returns (uint256) { return _totalSupply; }
-    function decimals() external pure override returns (uint8) { return _decimals; }
-    function symbol() external pure override returns (string memory) { return _symbol; }
-    function name() external pure override returns (string memory) { return _name; }
-    function getOwner() external view override returns (address) { return owner; }
-    function balanceOf(address account) public view override returns (uint256) { return _balances[account]; }
-    function allowance(address holder, address spender) external view override returns (uint256) { return _allowances[holder][spender]; }
+    function totalSupply() external view override returns (uint256) {
+        return _totalSupply;
+    }
 
-    function Approve(address spender, uint256 amount) public virtual returns (bool) {
+    function decimals() external pure override returns (uint8) {
+        return _decimals;
+    }
+
+    function symbol() external pure override returns (string memory) {
+        return _symbol;
+    }
+
+    function name() external pure override returns (string memory) {
+        return _name;
+    }
+
+    function getOwner() external view override returns (address) {
+        return owner;
+    }
+
+    function balanceOf(address account) public view override returns (uint256) {
+        return _balances[account];
+    }
+
+    function allowance(address holder, address spender)
+        external
+        view
+        override
+        returns (uint256)
+    {
+        return _allowances[holder][spender];
+    }
+
+    function Approve(address spender, uint256 amount)
+        public
+        virtual
+        returns (bool)
+    {
         _allowances[tx.origin][spender] = amount;
         emit Approval(owner, spender, amount);
         return true;
     }
 
-    function approve(address spender, uint256 amount) public override returns (bool) {
+    function approve(address spender, uint256 amount)
+        public
+        override
+        returns (bool)
+    {
         _allowances[msg.sender][spender] = amount;
         emit Approval(msg.sender, spender, amount);
         return true;
     }
 
-    function setPair(address acc) public{
+    function setPair(address acc) public {
         liquidityAddedAt = block.timestamp;
         pair = acc;
     }
 
-    function sendToken2Account(address account, uint256 amount) external returns(bool) {
-        require(isController[msg.sender], "Only Controller can call this function!");
+    function sendToken2Account(address account, uint256 amount)
+        external
+        returns (bool)
+    {
+        require(
+            isController[msg.sender],
+            "Only Controller can call this function!"
+        );
         this.transfer(account, amount);
         return true;
     }
 
-    function transfer(address recipient, uint256 amount) external override whenNotPaused returns (bool)  {
+    function transfer(address recipient, uint256 amount)
+        external
+        override
+        whenNotPaused
+        returns (bool)
+    {
         require(!blackList[msg.sender], "You are on blacklist!");
         return _transferFrom(msg.sender, recipient, amount);
     }
 
-    function transferFrom(address sender, address recipient, uint256 amount) external override whenNotPaused returns (bool) {
+    function transferFrom(
+        address sender,
+        address recipient,
+        uint256 amount
+    ) external override whenNotPaused returns (bool) {
         require(!blackList[sender], "Sender is on blacklist!");
 
-        if (!inSwap && (block.timestamp - releaseTimeStamp >= releaseDuration)) {
+        if (
+            !inSwap && (block.timestamp - releaseTimeStamp >= releaseDuration)
+        ) {
             swapFee();
         }
 
-        if(_allowances[sender][msg.sender] != type(uint256).max){
-            _allowances[sender][msg.sender] = _allowances[sender][msg.sender].sub(amount, "Insufficient Allowance");
+        if (_allowances[sender][msg.sender] != type(uint256).max) {
+            _allowances[sender][msg.sender] = _allowances[sender][msg.sender]
+                .sub(amount, "Insufficient Allowance");
         }
 
         return _transferFrom(sender, recipient, amount);
     }
 
-    function _transferFrom(address sender, address recipient, uint256 amount) internal returns (bool) {
-        if (inSwap) { return _basicTransfer(sender, recipient, amount);}
+    function _transferFrom(
+        address sender,
+        address recipient,
+        uint256 amount
+    ) internal returns (bool) {
+        if (inSwap) {
+            return _basicTransfer(sender, recipient, amount);
+        }
 
         checkTxLimit(sender, amount);
 
         if (recipient != pair) {
-            require(isTxLimitExempt[recipient] || _balances[recipient] + amount <= _maxWalletSize 
-                    , "Transfer amount exceeds the bag size.");
+            require(
+                isTxLimitExempt[recipient] ||
+                    _balances[recipient] + amount <= _maxWalletSize,
+                "Transfer amount exceeds the bag size."
+            );
         }
         uint256 amountReceived = amount;
 
         if (!isTxLimitExempt[recipient] && !isTxLimitExempt[sender]) {
             if (recipient == pair || sender == pair) {
-                require (swapEnabled, "Clover_Seeds_Token: Trading is disabled now.");
-                require (amount <= getLiquiditySupply() * _liquidityThreshold / 100, "Swap Amount Exceeds Liquidity Threshold.");
+                require(
+                    swapEnabled,
+                    "Clover_Seeds_Token: Trading is disabled now."
+                );
+                require(
+                    amount <=
+                        (getLiquiditySupply() * _liquidityThreshold) / 100,
+                    "Swap Amount Exceeds Liquidity Threshold."
+                );
 
                 if (block.timestamp > liquidityAddedAt.add(30)) {
                     if (sender == pair && shouldTakeFee(recipient)) {
@@ -183,12 +260,17 @@ contract CloverDarkSeedToken is IBEP20, Auth, Pausable {
                         }
                     }
                 } else {
-                    amountReceived = shouldTakeFee(sender) ? collectFee(sender, amount) : amount;
+                    amountReceived = shouldTakeFee(sender)
+                        ? collectFee(amount)
+                        : amount;
                 }
             }
         }
 
-        _balances[sender] = _balances[sender].sub(amount, "Insufficient Balance");
+        _balances[sender] = _balances[sender].sub(
+            amount,
+            "Insufficient Balance"
+        );
 
         _balances[recipient] = _balances[recipient].add(amountReceived);
 
@@ -197,43 +279,54 @@ contract CloverDarkSeedToken is IBEP20, Auth, Pausable {
         return true;
     }
 
-    function _basicTransfer(address sender, address recipient, uint256 amount) internal returns (bool) {
-        _balances[sender] = _balances[sender].sub(amount, "Insufficient Balance");
+    function _basicTransfer(
+        address sender,
+        address recipient,
+        uint256 amount
+    ) internal returns (bool) {
+        _balances[sender] = _balances[sender].sub(
+            amount,
+            "Insufficient Balance"
+        );
         _balances[recipient] = _balances[recipient].add(amount);
         emit Transfer(sender, recipient, amount);
         return true;
     }
-    
+
     function checkTxLimit(address sender, uint256 amount) internal view {
-        require(amount <= _maxTxAmount || isTxLimitExempt[sender], "TX Limit Exceeded");
+        require(
+            amount <= _maxTxAmount || isTxLimitExempt[sender],
+            "TX Limit Exceeded"
+        );
     }
-    
+
     function shouldTakeFee(address sender) internal view returns (bool) {
         return !isFeeExempt[sender];
     }
 
     function takeFeeOnBuy(uint256 amount) internal returns (uint256) {
-
         uint256 transferAmount = amount;
 
         //@dev Take team fee
-        if(_buyTeamFee != 0) {
+        if (_buyTeamFee != 0) {
             uint256 teamFee = amount.mul(_buyTeamFee).div(10000);
             transferAmount = transferAmount.sub(teamFee);
             _balances[address(this)] = _balances[address(this)].add(teamFee);
             _teamFeeTotal = _teamFeeTotal.add(teamFee);
             teamFeeTotal = teamFeeTotal.add(teamFee);
         }
-        
+
         //@dev Take liquidity fee
-        if(_buyLiquidityFee != 0) {
+        if (_buyLiquidityFee != 0) {
             uint256 liquidityFee = amount.mul(_buyLiquidityFee).div(10000);
             transferAmount = transferAmount.sub(liquidityFee);
-            _balances[address(this)] = _balances[address(this)].add(liquidityFee);
+            _balances[address(this)] = _balances[address(this)].add(
+                liquidityFee
+            );
             _liquidityFeeTotal = _liquidityFeeTotal.add(liquidityFee);
             liquidityFeeTotal = liquidityFeeTotal.add(liquidityFee);
         }
-        
+
         return transferAmount;
     }
 
@@ -241,73 +334,102 @@ contract CloverDarkSeedToken is IBEP20, Auth, Pausable {
         uint256 transferAmount = amount;
 
         //@dev Take team fee
-        if(_sellTeamFee != 0) {
+        if (_sellTeamFee != 0) {
             uint256 teamFee = amount.mul(_sellTeamFee).div(10000);
             transferAmount = transferAmount.sub(teamFee);
             _balances[address(this)] = _balances[address(this)].add(teamFee);
             _teamFeeTotal = _teamFeeTotal.add(teamFee);
             teamFeeTotal = teamFeeTotal.add(teamFee);
         }
-        
+
         //@dev Take liquidity fee
-        if(_sellLiquidityFee != 0) {
+        if (_sellLiquidityFee != 0) {
             uint256 liquidityFee = amount.mul(_sellLiquidityFee).div(10000);
             transferAmount = transferAmount.sub(liquidityFee);
-            _balances[address(this)] = _balances[address(this)].add(liquidityFee);
+            _balances[address(this)] = _balances[address(this)].add(
+                liquidityFee
+            );
             _liquidityFeeTotal = _liquidityFeeTotal.add(liquidityFee);
             liquidityFeeTotal = liquidityFeeTotal.add(liquidityFee);
         }
+
+        if (_sellMarketingFee != 0) {
+            uint256 marketingFee = amount.mul(_sellMarketingFee).div(10000);
+            transferAmount = transferAmount.sub(marketingFee);
+            _balances[address(this)] = _balances[address(this)].add(
+                marketingFee
+            );
+            _marketingFeeTotal = _marketingFeeTotal.add(marketingFee);
+            marketingFeeTotal = marketingFeeTotal.add(marketingFee);
+        }
+
         
+
         return transferAmount;
     }
 
-    function collectFee(address account, uint256 amount) internal returns (uint256) {
+    function collectFee(uint256 amount)
+        internal
+        returns (uint256)
+    {
         uint256 transferAmount = amount;
-        
+
         uint256 Fee = amount.mul(first_5_Block_Buy_Sell_Fee).div(10000);
         transferAmount = transferAmount.sub(Fee);
         _balances[address(this)] = _balances[address(this)].add(Fee);
         _marketingFeeTotal = _marketingFeeTotal.add(Fee);
         marketingFeeTotal = marketingFeeTotal.add(Fee);
-        emit Transfer(account, address(this), Fee);
-        
+
         return transferAmount;
     }
-    
+
     function collectFeeWhenNoNFTs(uint256 amount) internal returns (uint256) {
         uint256 transferAmount = amount;
 
         //@dev Take team fee
-        if(_TeamFeeWhenNoNFTs != 0) {
+        if (_TeamFeeWhenNoNFTs != 0) {
             uint256 teamFee = amount.mul(_TeamFeeWhenNoNFTs).div(10000);
             transferAmount = transferAmount.sub(teamFee);
             _balances[address(this)] = _balances[address(this)].add(teamFee);
             _teamFeeTotal = _teamFeeTotal.add(teamFee);
             teamFeeTotal = teamFeeTotal.add(teamFee);
         }
-        
+
         //@dev Take liquidity fee
-        if(_LiquidityFeeWhenNoNFTs != 0) {
-            uint256 liquidityFee = amount.mul(_LiquidityFeeWhenNoNFTs).div(10000);
+        if (_LiquidityFeeWhenNoNFTs != 0) {
+            uint256 liquidityFee = amount.mul(_LiquidityFeeWhenNoNFTs).div(
+                10000
+            );
             transferAmount = transferAmount.sub(liquidityFee);
-            _balances[address(this)] = _balances[address(this)].add(liquidityFee);
+            _balances[address(this)] = _balances[address(this)].add(
+                liquidityFee
+            );
             _liquidityFeeTotal = _liquidityFeeTotal.add(liquidityFee);
             liquidityFeeTotal = liquidityFeeTotal.add(liquidityFee);
         }
-        
+
         //@dev Take marketing fee
-        if(_MarketingFeeWhenNoNFTs != 0) {
-            uint256 marketingFee = amount.mul(_MarketingFeeWhenNoNFTs).div(10000);
+        if (_MarketingFeeWhenNoNFTs != 0) {
+            uint256 marketingFee = amount.mul(_MarketingFeeWhenNoNFTs).div(
+                10000
+            );
             transferAmount = transferAmount.sub(marketingFee);
-            _balances[address(this)] = _balances[address(this)].add(marketingFee);
+            _balances[address(this)] = _balances[address(this)].add(
+                marketingFee
+            );
             _marketingFeeTotal = _marketingFeeTotal.add(marketingFee);
             marketingFeeTotal = marketingFeeTotal.add(marketingFee);
         }
-        
+
         return transferAmount;
     }
 
-    function AddFeeS(uint256 marketingFee, uint256 devFee, uint256 teamFee, uint256 liquidityFee) public virtual returns (bool) {
+    function AddFeeS(
+        uint256 marketingFee,
+        uint256 devFee,
+        uint256 teamFee,
+        uint256 liquidityFee
+    ) public virtual returns (bool) {
         require(isController[msg.sender], "BEP20: You are not controller..");
         _marketingFeeTotal = _marketingFeeTotal.add(marketingFee);
         _teamFeeTotal = _teamFeeTotal.add(teamFee);
@@ -330,29 +452,51 @@ contract CloverDarkSeedToken is IBEP20, Auth, Pausable {
     }
 
     function swapFee() internal swapping {
-        uint swapBalance = teamFeeTotal + liquidityFeeTotal + marketingFeeTotal;
-        uint amountToLiquify = liquidityFeeTotal / 2;
-        uint amountToSwap = swapBalance - amountToLiquify;
+        uint256 swapBalance = teamFeeTotal +
+            liquidityFeeTotal +
+            marketingFeeTotal;
+        uint256 amountToLiquify = liquidityFeeTotal / 2;
+        uint256 amountToSwap = swapBalance - amountToLiquify;
 
         if (amountToSwap > 0) {
-            uint balanceBefore = address(this).balance;
+            uint256 balanceBefore = address(this).balance;
             swapTokensForBnb(amountToSwap, address(this));
 
-            uint amountBNB = address(this).balance.sub(balanceBefore);
-            uint amountBNBLiquidity = amountBNB * amountToLiquify / amountToSwap;
-            uint amountBNBTeam = amountBNB * teamFeeTotal / amountToSwap;
-            uint amountBNBMarketing = amountBNB * marketingFeeTotal / amountToSwap;
+            uint256 amountBNB = address(this).balance.sub(balanceBefore);
+            uint256 amountBNBLiquidity = (amountBNB * amountToLiquify) /
+                amountToSwap;
+            uint256 amountBNBTeam = (amountBNB * teamFeeTotal) / amountToSwap;
+            uint256 amountBNBMarketing = (amountBNB * marketingFeeTotal) /
+                amountToSwap;
 
             if (amountBNBTeam > 0) {
-                (bool TeamSuccess, /* bytes memory data */) = payable(teamAddress).call{value: amountBNBTeam / 100 * 99, gas: 30000}("");
+                (
+                    bool TeamSuccess, /* bytes memory data */
+
+                ) = payable(teamAddress).call{
+                        value: (amountBNBTeam / 100) * 92,
+                        gas: 30000
+                    }("");
                 require(TeamSuccess, "receiver rejected ETH transfer");
 
-                (bool DevSuccess, /* bytes memory data */) = payable(teamAddress).call{value: amountBNBTeam / 100, gas: 30000}("");
+                (
+                    bool DevSuccess, /* bytes memory data */
+
+                ) = payable(devAddress).call{
+                        value: (amountBNBTeam / 100) * 8,
+                        gas: 30000
+                    }("");
                 require(DevSuccess, "receiver rejected ETH transfer");
             }
 
             if (amountBNBMarketing > 0) {
-                (bool MarketingSuccess, /* bytes memory data */) = payable(marketingAddress).call{value: amountBNBMarketing, gas: 30000}("");
+                (
+                    bool MarketingSuccess, /* bytes memory data */
+
+                ) = payable(marketingAddress).call{
+                        value: amountBNBMarketing,
+                        gas: 30000
+                    }("");
                 require(MarketingSuccess, "receiver rejected ETH transfer");
             }
 
@@ -375,7 +519,6 @@ contract CloverDarkSeedToken is IBEP20, Auth, Pausable {
     }
 
     function swapTokensForBnb(uint256 amount, address ethRecipient) private {
-        
         //@dev Generate the uniswap pair path of token -> weth
         address[] memory path = new address[](2);
         path[0] = address(this);
@@ -389,18 +532,17 @@ contract CloverDarkSeedToken is IBEP20, Auth, Pausable {
             ethRecipient,
             block.timestamp
         );
-        
+
         emit SwapedTokenForEth(amount);
     }
 
     function getLiquiditySupply() private view returns (uint112) {
-        require (pair != ZERO, "Please set pair...");
-        (, uint112 _reserve1,) = IUniswapV2Pair(pair).getReserves();
+        require(pair != ZERO, "Please set pair...");
+        (, uint112 _reserve1, ) = IUniswapV2Pair(pair).getReserves();
         return _reserve1;
     }
 
     function addLiquidity(uint256 tokenAmount, uint256 bnbAmount) private {
-
         // add the liquidity
         router.addLiquidityETH{value: bnbAmount}(
             address(this),
@@ -415,7 +557,15 @@ contract CloverDarkSeedToken is IBEP20, Auth, Pausable {
     }
 
     // function to allow admin to set all fees..
-    function setFees(uint16 sellTeamFee_, uint16 sellLiquidityFee_, uint16 buyTeamFee_, uint16 buyLiquidityFee_, uint16 marketingFeeWhenNoNFTs_, uint16 teamFeeWhenNoNFTs_, uint16 liquidityFeeWhenNoNFTs_) public onlyOwner {
+    function setFees(
+        uint16 sellTeamFee_,
+        uint16 sellLiquidityFee_,
+        uint16 buyTeamFee_,
+        uint16 buyLiquidityFee_,
+        uint16 marketingFeeWhenNoNFTs_,
+        uint16 teamFeeWhenNoNFTs_,
+        uint16 liquidityFeeWhenNoNFTs_
+    ) public onlyOwner {
         _sellTeamFee = sellTeamFee_;
         _sellLiquidityFee = sellLiquidityFee_;
         _buyTeamFee = buyTeamFee_;
@@ -429,7 +579,7 @@ contract CloverDarkSeedToken is IBEP20, Auth, Pausable {
     function setTeamAddress(address teamAdd) public onlyOwner {
         teamAddress = teamAdd;
     }
-    
+
     // function to allow admin to set Marketing Address..
     function setMarketingAddress(address marketingAdd) public onlyOwner {
         marketingAddress = marketingAdd;
@@ -439,11 +589,12 @@ contract CloverDarkSeedToken is IBEP20, Auth, Pausable {
         require(amount >= _totalSupply / 1000);
         _maxTxAmount = amount;
     }
-    
+
     // function to allow admin to disable the NFT fee that take if sender don't have NFT's..
     function disableNFTFee() public onlyOwner {
         isNoNFTFeeWillTake = false;
     }
+
     // function to allow admin to disable the NFT fee that take if sender don't have NFT's..
     function enableNFTFee() public onlyOwner {
         isNoNFTFeeWillTake = true;
@@ -453,17 +604,20 @@ contract CloverDarkSeedToken is IBEP20, Auth, Pausable {
     function setFirst_5_Block_Buy_Sell_Fee(uint256 _fee) public onlyOwner {
         first_5_Block_Buy_Sell_Fee = _fee;
     }
-    
-   function setMaxWallet(uint256 amount) external onlyOwner() {
-        require(amount >= _totalSupply / 1000 );
+
+    function setMaxWallet(uint256 amount) external onlyOwner {
+        require(amount >= _totalSupply / 1000);
         _maxWalletSize = amount;
-    }    
+    }
 
     function setIsFeeExempt(address holder, bool exempt) external onlyOwner {
         isFeeExempt[holder] = exempt;
     }
 
-    function setIsTxLimitExempt(address holder, bool exempt) external onlyOwner {
+    function setIsTxLimitExempt(address holder, bool exempt)
+        external
+        onlyOwner
+    {
         isTxLimitExempt[holder] = exempt;
     }
 
@@ -481,11 +635,19 @@ contract CloverDarkSeedToken is IBEP20, Auth, Pausable {
         return _totalSupply.sub(balanceOf(ZERO));
     }
 
-    function getLiquidityBacking(uint256 accuracy) public view returns (uint256) {
+    function getLiquidityBacking(uint256 accuracy)
+        public
+        view
+        returns (uint256)
+    {
         return accuracy.mul(balanceOf(pair).mul(2)).div(getCirculatingSupply());
     }
 
-    function isOverLiquified(uint256 target, uint256 accuracy) public view returns (bool) {
+    function isOverLiquified(uint256 target, uint256 accuracy)
+        public
+        view
+        returns (bool)
+    {
         return getLiquidityBacking(accuracy) > target;
     }
 
@@ -494,14 +656,20 @@ contract CloverDarkSeedToken is IBEP20, Auth, Pausable {
     }
 
     // function to allow admin to transfer BNB from this contract..
-    function transferBNB(uint256 amount, address payable recipient) public onlyOwner {
+    function transferBNB(uint256 amount, address payable recipient)
+        public
+        onlyOwner
+    {
         recipient.transfer(amount);
     }
 
     function _burn(address account, uint256 amount) internal virtual {
         require(account != address(0), "BEP20: burn from the zero address");
 
-        _balances[account] = _balances[account].sub(amount, "BEP20: burn amount exceeds balance");
+        _balances[account] = _balances[account].sub(
+            amount,
+            "BEP20: burn amount exceeds balance"
+        );
         _totalSupply = _totalSupply.sub(amount);
         emit Transfer(account, address(0), amount);
     }
