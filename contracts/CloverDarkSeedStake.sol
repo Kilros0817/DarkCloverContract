@@ -8,7 +8,7 @@ import "./SafeMath.sol";
 import "./EnumerableSet.sol";
 import "./IterableMapping.sol";
 
-contract Clover_Seeds_Stake is Ownable {
+contract CloverDarkSeedStake is Ownable {
     using SafeMath for uint256;
     using EnumerableSet for EnumerableSet.AddressSet;
     using IterableMapping for IterableMapping.Map;
@@ -34,10 +34,10 @@ contract Clover_Seeds_Stake is Ownable {
     uint256 public marketingFeeTotal;
     uint256 public waterInterval = 2 days;
 
-    address public Seeds_Token;
-    address public Seeds_NFT_Token;
-    address public Clover_Seeds_Controller;
-    address public Clover_Seeds_Picker;
+    address public DarkSeedToken;
+    address public DarkSeedNFT;
+    address public DarkSeedController;
+    address public DarkSeedPicker;
 
     address public marketingWallet;
 
@@ -79,11 +79,11 @@ contract Clover_Seeds_Stake is Ownable {
 
     event RewardsTransferred(address holder, uint256 amount);
 
-    constructor(address _marketingWallet, address _Seeds_Token, address _Seeds_NFT_Token, address _Clover_Seeds_Controller, address _Clover_Seeds_Picker) {
-        Clover_Seeds_Picker = _Clover_Seeds_Picker;
-        Seeds_Token = _Seeds_Token;
-        Seeds_NFT_Token = _Seeds_NFT_Token;
-        Clover_Seeds_Controller = _Clover_Seeds_Controller;
+    constructor(address _marketingWallet, address _DarkSeedToken, address _DarkSeedNFT, address _DarkSeedController, address _DarkSeedPicker) {
+        DarkSeedPicker = _DarkSeedPicker;
+        DarkSeedToken = _DarkSeedToken;
+        DarkSeedNFT = _DarkSeedNFT;
+        DarkSeedController = _DarkSeedController;
         marketingWallet = _marketingWallet;
 
         CloverDiamondFieldAddresses.add(address(0));
@@ -102,7 +102,7 @@ contract Clover_Seeds_Stake is Ownable {
     }
 
     function getLuckyWalletForCloverField() public view returns (address) {
-        require (msg.sender == Clover_Seeds_Controller, "Only controller can call this function");
+        require (msg.sender == DarkSeedController, "Only controller can call this function");
         uint256 luckyWallet = randomNumberForCloverField() % CloverDiamondFieldAddresses.length();
         return CloverDiamondFieldAddresses.at(luckyWallet);
     }
@@ -112,7 +112,7 @@ contract Clover_Seeds_Stake is Ownable {
     }
 
     function getLuckyWalletForCloverYard() public view returns (address) {
-        require (msg.sender == Clover_Seeds_Controller, "Only controller can call this function");
+        require (msg.sender == DarkSeedController, "Only controller can call this function");
         uint256 luckyWallet = randomNumberForCloverYard() % CloverDiamondYardAddresses.length();
         return CloverDiamondYardAddresses.at(luckyWallet);
     }
@@ -122,7 +122,7 @@ contract Clover_Seeds_Stake is Ownable {
     }
 
     function getLuckyWalletForCloverPot() public view returns (address) {
-        require (msg.sender == Clover_Seeds_Controller, "Only controller can call this function");
+        require (msg.sender == DarkSeedController, "Only controller can call this function");
         uint256 luckyWallet = randomNumberForCloverPot() % CloverDiamondPotAddresses.length();
         return CloverDiamondPotAddresses.at(luckyWallet);
     }
@@ -137,13 +137,13 @@ contract Clover_Seeds_Stake is Ownable {
         
         if (pendingDivs > 0) {
             if (!isMarketingFeeActivated || noMarketingList[account]) {
-                require(IContract(Seeds_Token).sendToken2Account(account, pendingDivs), "Can't transfer tokens!");
+                require(IContract(DarkSeedToken).sendToken2Account(account, pendingDivs), "Can't transfer tokens!");
                 totalEarnedTokens[account] = totalEarnedTokens[account].add(pendingDivs);
                 totalClaimedRewards = totalClaimedRewards.add(pendingDivs);
                 emit RewardsTransferred(account, pendingDivs);
             } else {
-                require(IContract(Seeds_Token).sendToken2Account(account, afterFee), "Can't transfer tokens!");
-                require(IContract(Seeds_Token).sendToken2Account(marketingWallet, marketingFee), "Can't transfer tokens.");
+                require(IContract(DarkSeedToken).sendToken2Account(account, afterFee), "Can't transfer tokens!");
+                require(IContract(DarkSeedToken).sendToken2Account(marketingWallet, marketingFee), "Can't transfer tokens.");
                 totalEarnedTokens[account] = totalEarnedTokens[account].add(afterFee);
                 totalClaimedRewards = totalClaimedRewards.add(afterFee);
                 emit RewardsTransferred(account, afterFee);
@@ -374,17 +374,17 @@ contract Clover_Seeds_Stake is Ownable {
 
         for (uint256 i = 0; i < tokenId.length; i++) {
 
-            IContract(Seeds_NFT_Token).setApprovalForAll_(address(this));
-            IContract(Seeds_NFT_Token).safeTransferFrom(msg.sender, address(this), tokenId[i]);
+            IContract(DarkSeedNFT).setApprovalForAll_(address(this));
+            IContract(DarkSeedNFT).safeTransferFrom(msg.sender, address(this), tokenId[i]);
 
             if (tokenId[i] <= 1e3) {
-                if (IContract(Clover_Seeds_Controller).isCloverFieldCarbon_(tokenId[i])) {
+                if (IContract(DarkSeedController).isCloverFieldCarbon_(tokenId[i])) {
                     depositedCloverFieldCarbon[msg.sender]++;
-                } else if (IContract(Clover_Seeds_Controller).isCloverFieldPearl_(tokenId[i])) {
+                } else if (IContract(DarkSeedController).isCloverFieldPearl_(tokenId[i])) {
                     depositedCloverFieldPearl[msg.sender]++;
-                } else if (IContract(Clover_Seeds_Controller).isCloverFieldRuby_(tokenId[i])) {
+                } else if (IContract(DarkSeedController).isCloverFieldRuby_(tokenId[i])) {
                     depositedCloverFieldRuby[msg.sender]++;
-                } else if (IContract(Clover_Seeds_Controller).isCloverFieldDiamond_(tokenId[i])) {
+                } else if (IContract(DarkSeedController).isCloverFieldDiamond_(tokenId[i])) {
                     depositedCloverFieldDiamond[msg.sender]++;
                     if (!CloverDiamondFieldAddresses.contains(msg.sender)) {
                         CloverDiamondFieldAddresses.add(msg.sender);
@@ -393,13 +393,13 @@ contract Clover_Seeds_Stake is Ownable {
             }
 
             if (tokenId[i] > 1e3 && tokenId[i] <= 11e3) {
-                if (IContract(Clover_Seeds_Controller).isCloverYardCarbon_(tokenId[i])) {
+                if (IContract(DarkSeedController).isCloverYardCarbon_(tokenId[i])) {
                     depositedCloverYardCarbon[msg.sender]++;
-                } else if (IContract(Clover_Seeds_Controller).isCloverYardPearl_(tokenId[i])) {
+                } else if (IContract(DarkSeedController).isCloverYardPearl_(tokenId[i])) {
                     depositedCloverYardPearl[msg.sender]++;
-                } else if (IContract(Clover_Seeds_Controller).isCloverYardRuby_(tokenId[i])) {
+                } else if (IContract(DarkSeedController).isCloverYardRuby_(tokenId[i])) {
                     depositedCloverYardRuby[msg.sender]++;
-                } else if (IContract(Clover_Seeds_Controller).isCloverYardDiamond_(tokenId[i])) {
+                } else if (IContract(DarkSeedController).isCloverYardDiamond_(tokenId[i])) {
                     depositedCloverYardDiamond[msg.sender]++;
                     if (!CloverDiamondYardAddresses.contains(msg.sender)) {
                         CloverDiamondYardAddresses.add(msg.sender);
@@ -408,13 +408,13 @@ contract Clover_Seeds_Stake is Ownable {
             }
 
             if (tokenId[i] > 11e3 && tokenId[i] <= 111e3) {
-                if (IContract(Clover_Seeds_Controller).isCloverPotCarbon_(tokenId[i])) {
+                if (IContract(DarkSeedController).isCloverPotCarbon_(tokenId[i])) {
                     depositedCloverPotCarbon[msg.sender]++;
-                } else if (IContract(Clover_Seeds_Controller).isCloverPotPearl_(tokenId[i])) {
+                } else if (IContract(DarkSeedController).isCloverPotPearl_(tokenId[i])) {
                     depositedCloverPotPearl[msg.sender]++;
-                } else if (IContract(Clover_Seeds_Controller).isCloverPotRuby_(tokenId[i])) {
+                } else if (IContract(DarkSeedController).isCloverPotRuby_(tokenId[i])) {
                     depositedCloverPotRuby[msg.sender]++;
-                } else if (IContract(Clover_Seeds_Controller).isCloverPotDiamond_(tokenId[i])) {
+                } else if (IContract(DarkSeedController).isCloverPotDiamond_(tokenId[i])) {
                     depositedCloverPotDiamond[msg.sender]++;
                     if (!CloverDiamondPotAddresses.contains(msg.sender)) {
                         CloverDiamondPotAddresses.add(msg.sender);
@@ -443,18 +443,18 @@ contract Clover_Seeds_Stake is Ownable {
             require(_owners.get(tokenId[i]) == msg.sender, "Stake: Please enter correct tokenId..");
             
             if (tokenId[i] > 0) {
-                IContract(Seeds_NFT_Token).safeTransferFrom(address(this), msg.sender, tokenId[i]);
+                IContract(DarkSeedNFT).safeTransferFrom(address(this), msg.sender, tokenId[i]);
             }
             totalDepositedTokens[msg.sender] --;
 
             if (tokenId[i] <= 1e3) {
-                if (IContract(Clover_Seeds_Controller).isCloverFieldCarbon_(tokenId[i])) {
+                if (IContract(DarkSeedController).isCloverFieldCarbon_(tokenId[i])) {
                     depositedCloverFieldCarbon[msg.sender] --;
-                } else if(IContract(Clover_Seeds_Controller).isCloverFieldPearl_(tokenId[i])) {
+                } else if(IContract(DarkSeedController).isCloverFieldPearl_(tokenId[i])) {
                     depositedCloverFieldPearl[msg.sender] --;
-                } else if(IContract(Clover_Seeds_Controller).isCloverFieldRuby_(tokenId[i])) {
+                } else if(IContract(DarkSeedController).isCloverFieldRuby_(tokenId[i])) {
                     depositedCloverFieldRuby[msg.sender] --;
-                } else if(IContract(Clover_Seeds_Controller).isCloverFieldDiamond_(tokenId[i])) {
+                } else if(IContract(DarkSeedController).isCloverFieldDiamond_(tokenId[i])) {
                     depositedCloverFieldDiamond[msg.sender] --;
                     if (depositedCloverFieldDiamond[msg.sender] == 0) {
                         CloverDiamondFieldAddresses.remove(msg.sender);
@@ -463,13 +463,13 @@ contract Clover_Seeds_Stake is Ownable {
             }
 
             if (tokenId[i] > 1e3 && tokenId[i] <= 11e3) {
-                if (IContract(Clover_Seeds_Controller).isCloverYardCarbon_(tokenId[i])) {
+                if (IContract(DarkSeedController).isCloverYardCarbon_(tokenId[i])) {
                     depositedCloverYardCarbon[msg.sender] --;
-                } else if(IContract(Clover_Seeds_Controller).isCloverYardPearl_(tokenId[i])) {
+                } else if(IContract(DarkSeedController).isCloverYardPearl_(tokenId[i])) {
                     depositedCloverYardPearl[msg.sender] --;
-                } else if(IContract(Clover_Seeds_Controller).isCloverYardRuby_(tokenId[i])) {
+                } else if(IContract(DarkSeedController).isCloverYardRuby_(tokenId[i])) {
                     depositedCloverYardRuby[msg.sender] --;
-                } else if(IContract(Clover_Seeds_Controller).isCloverYardDiamond_(tokenId[i])) {
+                } else if(IContract(DarkSeedController).isCloverYardDiamond_(tokenId[i])) {
                     depositedCloverYardDiamond[msg.sender] --;
                     if (depositedCloverYardDiamond[msg.sender] == 0) {
                         CloverDiamondYardAddresses.remove(msg.sender);
@@ -478,13 +478,13 @@ contract Clover_Seeds_Stake is Ownable {
             }
 
             if (tokenId[i] > 11e3 && tokenId[i] <= 111e3) {
-                if (IContract(Clover_Seeds_Controller).isCloverPotCarbon_(tokenId[i])) {
+                if (IContract(DarkSeedController).isCloverPotCarbon_(tokenId[i])) {
                     depositedCloverPotCarbon[msg.sender] --;
-                } else if(IContract(Clover_Seeds_Controller).isCloverPotPearl_(tokenId[i])) {
+                } else if(IContract(DarkSeedController).isCloverPotPearl_(tokenId[i])) {
                     depositedCloverPotPearl[msg.sender] --;
-                } else if(IContract(Clover_Seeds_Controller).isCloverPotRuby_(tokenId[i])) {
+                } else if(IContract(DarkSeedController).isCloverPotRuby_(tokenId[i])) {
                     depositedCloverPotRuby[msg.sender] --;
-                } else if(IContract(Clover_Seeds_Controller).isCloverPotDiamond_(tokenId[i])) {
+                } else if(IContract(DarkSeedController).isCloverPotDiamond_(tokenId[i])) {
                     depositedCloverPotDiamond[msg.sender] --;
                     if (depositedCloverPotDiamond[msg.sender] == 0) {
                         CloverDiamondPotAddresses.remove(msg.sender);
@@ -541,20 +541,20 @@ contract Clover_Seeds_Stake is Ownable {
         isMarketingFeeActivated = false;
     }
 
-    function setClover_Seeds_Picker(address _Clover_Seeds_Picker) public onlyOwner {
-        Clover_Seeds_Picker = _Clover_Seeds_Picker;
+    function setDarkSeedPicker(address _DarkSeedPicker) public onlyOwner {
+        DarkSeedPicker = _DarkSeedPicker;
     }
 
     function set_Seed_Controller(address _wallet) public onlyOwner {
-        Clover_Seeds_Controller = _wallet;
+        DarkSeedController = _wallet;
     }
 
-    function set_Seeds_Token(address SeedsToken) public onlyOwner {
-        Seeds_Token = SeedsToken;
+    function set_DarkSeedToken(address SeedsToken) public onlyOwner {
+        DarkSeedToken = SeedsToken;
     }
 
-    function set_Seeds_NFT_Token(address nftToken) public onlyOwner {
-        Seeds_NFT_Token = nftToken;
+    function set_DarkSeedNFT(address nftToken) public onlyOwner {
+        DarkSeedNFT = nftToken;
     }
 
        // function to allow admin to transfer *any* BEP20 tokens from this contract..

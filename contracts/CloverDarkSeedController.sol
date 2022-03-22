@@ -6,7 +6,7 @@ import "./IContract.sol";
 import "./Ownable.sol";
 import "./SafeMath.sol";
 
-contract Clover_Seeds_Controller is Ownable {
+contract CloverDarkSeedController is Ownable {
     using SafeMath for uint256;
 
     address public Seeds_Token;
@@ -29,8 +29,8 @@ contract Clover_Seeds_Controller is Ownable {
     uint256 public maximumTokenCanBuy = 20;
     uint256 public maxMintAmount = 100;
     
-    uint16 public nftBuyFeeForTeam = 990;
-    uint16 public nftBuyFeeForDev = 10;
+    uint16 public nftBuyFeeForTeam = 920;
+    uint16 public nftBuyFeeForDev = 80;
     uint16 public nftBuyFeeForMarketing = 1000;
     uint16 public nftBuyFeeForLiquidity = 3000;
 
@@ -135,8 +135,8 @@ contract Clover_Seeds_Controller is Ownable {
     }
 
     function updateNftBuyFeeFor_Team_Marketing_Liquidity(uint16 _team, uint16 _mark, uint16 _liqu) public onlyOwner {
-        nftBuyFeeForTeam = _team * 99 / 100;
-        nftBuyFeeForDev = _team / 100;
+        nftBuyFeeForTeam = _team * 92 / 100;
+        nftBuyFeeForDev = _team - nftBuyFeeForTeam;
         nftBuyFeeForMarketing = _mark;
         nftBuyFeeForLiquidity = _liqu;
     }

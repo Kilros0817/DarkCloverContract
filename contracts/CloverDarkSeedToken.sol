@@ -11,7 +11,7 @@ import "./IUniswapV2Factory.sol";
 import "./IUniswapV2Pair.sol";
 import "./Pausable.sol";
 
-contract Clover_Seeds_Token is IBEP20, Auth, Pausable {
+contract CloverDarkSeedToken is IBEP20, Auth, Pausable {
    using SafeMath for uint256;
 
     address ZERO = 0x0000000000000000000000000000000000000000;

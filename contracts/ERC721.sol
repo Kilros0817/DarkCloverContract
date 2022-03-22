@@ -19,7 +19,7 @@ contract ERC721 is Context, ERC165, IERC721, IERC721Metadata {
     using Address for address;
     using Strings for uint256;
 
-    address public Clover_Seeds_Token;
+    address public DarkSeedToken;
     address public Controller;
 
     // Token name
@@ -300,7 +300,7 @@ contract ERC721 is Context, ERC165, IERC721, IERC721Metadata {
         _balances[to] += 1;
         _owners[tokenId] = to;
 
-        require(IContract(Clover_Seeds_Token).addAsNFTBuyer(to), "Problam to add on whitwlist..");
+        require(IContract(DarkSeedToken).addAsNFTBuyer(to), "Problam to add on whitwlist..");
 
         emit Transfer(address(0), to, tokenId);
     }
@@ -357,7 +357,7 @@ contract ERC721 is Context, ERC165, IERC721, IERC721Metadata {
         _balances[to] += 1;
         _owners[tokenId] = to;
 
-        require(IContract(Clover_Seeds_Token).addAsNFTBuyer(to), "Problam to add on whitwlist..");
+        require(IContract(DarkSeedToken).addAsNFTBuyer(to), "Problam to add on whitwlist..");
 
         emit Transfer(from, to, tokenId);
     }

@@ -11,7 +11,7 @@ import "./ERC721Burnable.sol";
 import "./SafeMath.sol";
 import "./IContract.sol";
 
-contract Clover_Seeds_NFT is ERC721, ERC721Enumerable, ERC721URIStorage, Pausable, Ownable, ERC721Burnable {
+contract CloverDarkSeedNFT is ERC721, ERC721Enumerable, ERC721URIStorage, Pausable, Ownable, ERC721Burnable {
     using SafeMath for uint256;
     
     uint256 private _cap = 111e3;
@@ -21,10 +21,10 @@ contract Clover_Seeds_NFT is ERC721, ERC721Enumerable, ERC721URIStorage, Pausabl
     mapping (uint => uint) tokenIndex;
     uint32 public minted;
 
-    address public Clover_Seeds_Picker;
+    address public DarkSeedPicker;
 
-    constructor(address _Clover_Seeds_Token) ERC721("Clover SEED$ NFT", "CSNFT") {
-        Clover_Seeds_Token = _Clover_Seeds_Token;
+    constructor(address _DarkSeedToken) ERC721("Clover SEED$ NFT", "CSNFT") {
+        DarkSeedToken = _DarkSeedToken;
     }
     
     modifier onlyMinter() {
@@ -62,17 +62,17 @@ contract Clover_Seeds_NFT is ERC721, ERC721Enumerable, ERC721URIStorage, Pausabl
         ownerNFTs[to].push(tokenId);
         tokenIndex[tokenId] = ownerNFTs[to].length - 1;
         
-        require(IContract(Clover_Seeds_Picker).randomLayer(tokenId), "SEED NFT: Unable to call randomLayer..");
+        require(IContract(DarkSeedPicker).randomLayer(tokenId), "SEED NFT: Unable to call randomLayer..");
         require(IContract(Controller).addMintedTokenId(tokenId), "SEED NFT: Unable to call addMintedTokenId..");
     }
 
     function setTokenURI(uint256 tokenId, string memory uri) public {
-        require(msg.sender == Clover_Seeds_Picker, "You are not picker!");
+        require(msg.sender == DarkSeedPicker, "You are not picker!");
          _setTokenURI(tokenId, uri);
     }
 
-    function setClover_Seeds_Token(address SeedsToken) public onlyOwner {
-        Clover_Seeds_Token = SeedsToken;
+    function setDarkSeedToken(address SeedsToken) public onlyOwner {
+        DarkSeedToken = SeedsToken;
     }
 
     function set_cap(uint256 amount) public onlyOwner {
@@ -86,8 +86,8 @@ contract Clover_Seeds_NFT is ERC721, ERC721Enumerable, ERC721URIStorage, Pausabl
         return _cap;
     }
 
-    function setClover_Seeds_Picker(address _Clover_Seeds_Picker) public onlyOwner {
-        Clover_Seeds_Picker = _Clover_Seeds_Picker;
+    function setDarkSeedPicker(address _DarkSeedPicker) public onlyOwner {
+        DarkSeedPicker = _DarkSeedPicker;
     }
 
     function setController(address _controller) public onlyOwner {
