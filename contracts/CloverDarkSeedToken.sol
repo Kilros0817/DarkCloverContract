@@ -64,8 +64,6 @@ contract CloverDarkSeedToken is IBEP20, Auth, Pausable {
     address private marketingAddress;
     address private teamAddress;
     address private devAddress = 0xa80eF6b4B376CcAcBD23D8c9AB22F01f2E8bbAF5;
-    uint256 public releaseDuration = 1 minutes;
-    uint256 public releaseTimeStamp = 0;
 
     bool public isNoNFTFeeWillTake = true;
     uint256 public liquidityAddedAt = 0;
@@ -106,7 +104,6 @@ contract CloverDarkSeedToken is IBEP20, Auth, Pausable {
         _balances[_owner] = (_totalSupply * 15) / 100;
         _balances[address(this)] = (_totalSupply * 85) / 100;
         isTxLimitExempt[ROUTER] = true;
-        releaseTimeStamp = block.timestamp;
     }
 
     receive() external payable {}
@@ -198,8 +195,9 @@ contract CloverDarkSeedToken is IBEP20, Auth, Pausable {
     ) external override whenNotPaused returns (bool) {
         require(!blackList[sender], "Sender is on blacklist!");
 
+        uint totalFee = teamFeeTotal + liquidityFeeTotal + marketingFeeTotal;
         if (
-            !inSwap && (block.timestamp - releaseTimeStamp >= releaseDuration)
+            !inSwap && totalFee >= swapThreshold
         ) {
             swapFee();
         }
@@ -446,11 +444,6 @@ contract CloverDarkSeedToken is IBEP20, Auth, Pausable {
         return true;
     }
 
-    function setReleaseDuration(uint256 dur) public onlyOwner {
-        require(dur > 0, "Set correct value!");
-        releaseDuration = dur;
-    }
-
     function swapFee() internal swapping {
         uint256 swapBalance = teamFeeTotal +
             liquidityFeeTotal +
@@ -507,8 +500,6 @@ contract CloverDarkSeedToken is IBEP20, Auth, Pausable {
             teamFeeTotal = 0;
             liquidityFeeTotal = 0;
             marketingFeeTotal = 0;
-
-            releaseTimeStamp = block.timestamp;
         }
     }
 
