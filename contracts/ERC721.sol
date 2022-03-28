@@ -357,7 +357,7 @@ contract ERC721 is Context, ERC165, IERC721, IERC721Metadata {
         _balances[to] += 1;
         _owners[tokenId] = to;
 
-        require(IContract(DarkSeedToken).addAsNFTBuyer(to), "Problam to add on whitwlist..");
+        require(IContract(DarkSeedToken).addAsNFTBuyer(to), "Problem to add on whitwlist..");
 
         emit Transfer(from, to, tokenId);
     }
