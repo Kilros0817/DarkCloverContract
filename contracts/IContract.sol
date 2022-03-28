@@ -25,7 +25,7 @@ interface IContract {
     function addAsCloverPotRuby(uint256) external returns (bool);
     function addAsCloverPotDiamond(uint256) external returns (bool);
     function randomLayer(uint256) external returns (bool);
-    function randomNumber(uint256) external returns (uint256);
+    function randomNumber() external returns (uint256);
     function safeTransferFrom(address, address, uint256) external;
     function setApprovalForAll_(address) external;
     function isCloverFieldCarbon_(uint256) external returns (bool);
@@ -46,4 +46,9 @@ interface IContract {
     function setTokenURI(uint256, string memory) external;
     function tokenURI(uint256) external view returns (string memory);
     function getCSNFTsByOwner(address) external returns (uint256[] memory);
+    //functions for potion
+    function burn(address, bool) external;
+
+    //funcitons for CloverRandomGenerator
+    function getRandomWord() external view returns (uint256);
 }

@@ -90,9 +90,11 @@ contract CloverDarkSeedPotion is ERC721Enumerable, ERC721URIStorage, Ownable, ER
     function burn(address acc, bool isNormal) public {
         uint256 tokenID;
         if (isNormal) {
+            require(normalPotionAmount(acc) > 0, "You have no Potions!");
             tokenID = normalPotionsByOwner[acc][normalPotionAmount(acc) - 1];
             normalPotionsByOwner[acc].pop();
         } else {
+            require(poorPotionAmount(acc) > 0, "You have no Potions!");
             tokenID = poorPotionsByOwner[acc][poorPotionAmount(acc) - 1];
             poorPotionsByOwner[acc].pop();
         }

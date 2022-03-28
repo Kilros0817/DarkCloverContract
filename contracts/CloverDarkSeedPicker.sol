@@ -56,9 +56,16 @@ contract CloverDarkSeedPicker is Ownable {
     string private _baseURIPotRuby;
     string private _baseURIPotDiamond;
 
+    address CloverRandomGenerator;
+    uint256 rand;
+
     constructor(address _Seeds_NFT_Token, address _DarkSeedController) {
         DarkSeedController = _DarkSeedController;
         DarkSeedNFT = _Seeds_NFT_Token;
+    }
+
+    function setCloverRandomGenerator(address _CloverRandomGenerator) public onlyOwner {
+        CloverRandomGenerator = _CloverRandomGenerator;
     }
 
     function setBaseURIFieldCarbon(string calldata _uri) public onlyOwner {
@@ -98,19 +105,9 @@ contract CloverDarkSeedPicker is Ownable {
         _baseURIPotDiamond = _uri;
     }
 
-
-    function randomNumber(uint256 seed) public view returns (uint256) {
-        return uint256(keccak256(abi.encodePacked(
-            tx.origin,
-            block.difficulty,
-            blockhash(block.number - 1), 
-            block.timestamp, 
-            seed
-            )));
-    }
-
-    function random(uint seed) public view returns (uint256) {
-        return uint256(keccak256(abi.encodePacked(tx.origin, blockhash(block.number), block.timestamp, seed)));
+    function randomNumber() public returns (uint256) {
+        rand = IContract(CloverRandomGenerator).getRandomWord();
+        return rand;
     }
 
     function setSeeds_NFT_Token(address _Seeds_NFT_Token) public onlyOwner {
@@ -124,8 +121,7 @@ contract CloverDarkSeedPicker is Ownable {
     function randomLayer(uint256 tokenId) public returns (bool) {
         require(msg.sender == DarkSeedNFT, "Clover_Seeds_Picker: You are not CloverDarkSeedNFT..");
         
-        uint256 index = random(tokenId);
-        uint8 num = uint8(index % 100);
+        uint8 num = uint8(rand >> 16 % 100);
         if (tokenId <= 1e3) {
             if (totalCloverFieldDiamondMinted == totalCloverFieldDiamond) {
                 num = uint8(num % 99) + 1;

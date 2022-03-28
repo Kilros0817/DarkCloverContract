@@ -9,10 +9,11 @@ import "./SafeMath.sol";
 contract CloverDarkSeedController is Ownable {
     using SafeMath for uint256;
 
-    address public Seeds_Token;
-    address public Seeds_NFT_Token;
-    address public Clover_Seeds_Picker;
-    address public Clover_Seeds_Stake;
+    address public CloverDarkSeedToken;
+    address public CloverDarkSeedNFT;
+    address public CloverDarkSeedPicker;
+    address public CloverDarkSeedStake;
+    address public CloverDarkSeedPotion;
     address public teamWallet;
 
     uint256 public totalCloverFieldMinted;
@@ -41,6 +42,11 @@ contract CloverDarkSeedController is Ownable {
     uint256 public cloverYardPrice = 1e21;
     uint256 public cloverPotPrice = 1e20;
 
+    uint8 public fieldPercentByPotion = 60;
+    uint8 public yardPercentByPotion = 38;
+    uint8 public potPercentByPotion = 2;
+
+    uint256 public poorTokenAmount;
     bool public isContractActivated = false;
 
     mapping(address => bool) public isTeamAddress;
@@ -77,9 +83,10 @@ contract CloverDarkSeedController is Ownable {
 
     event RewardsTransferred(address holder, uint256 amount);
 
-    constructor(address _teamWallet, address _Seeds_Token, address _Seeds_NFT_Token) {
-        Seeds_Token = _Seeds_Token;
-        Seeds_NFT_Token = _Seeds_NFT_Token;
+    constructor(address _teamWallet, address _CloverDarkSeedToken, address _CloverDarkSeedNFT, address _CloverDarkSeedPotion) {
+        CloverDarkSeedToken = _CloverDarkSeedToken;
+        CloverDarkSeedNFT = _CloverDarkSeedNFT;
+        CloverDarkSeedPotion = _CloverDarkSeedPotion;
         teamWallet = _teamWallet;
         isCloverFieldCarbon[1] = true;
     }
@@ -144,12 +151,12 @@ contract CloverDarkSeedController is Ownable {
         require(isContractActivated, "Controller: Contract is not activeted yet..");
         address to = msg.sender;
         uint256 tokenId = totalCloverFieldMinted + 1;
-        uint256 random = IContract(Clover_Seeds_Picker).randomNumber(tokenId);
+        uint256 random = IContract(CloverDarkSeedPicker).randomNumber();
 
         bool lucky = ((random >> 245) % 20) == 0 ;
 
         if (lucky) {
-            address luckyWalletForCloverField = IContract(Clover_Seeds_Stake).getLuckyWalletForCloverField();
+            address luckyWalletForCloverField = IContract(CloverDarkSeedStake).getLuckyWalletForCloverField();
             if (luckyWalletForCloverField != address(0)) {
                 to = luckyWalletForCloverField;
             }
@@ -165,11 +172,11 @@ contract CloverDarkSeedController is Ownable {
         }
         
         if (cloverFieldPrice > 0) {
-            IContract(Seeds_Token).Approve(address(this), cloverFieldPrice);
-            IContract(Seeds_Token).transferFrom(msg.sender, Seeds_Token, cloverFieldPrice);
-            IContract(Seeds_Token).AddFeeS(marketingFee, devFee, teamFee, liquidityFee);
+            IContract(CloverDarkSeedToken).Approve(address(this), cloverFieldPrice);
+            IContract(CloverDarkSeedToken).transferFrom(msg.sender, CloverDarkSeedToken, cloverFieldPrice);
+            IContract(CloverDarkSeedToken).AddFeeS(marketingFee, devFee, teamFee, liquidityFee);
         }
-        IContract(Seeds_NFT_Token).mint(to, tokenId);
+        IContract(CloverDarkSeedNFT).mint(to, tokenId);
 
     }
 
@@ -180,11 +187,11 @@ contract CloverDarkSeedController is Ownable {
         address to = msg.sender;
         uint256 tokenId = _totalCloverYardMinted + 1;
 
-        uint256 random = IContract(Clover_Seeds_Picker).randomNumber(tokenId);
+        uint256 random = IContract(CloverDarkSeedPicker).randomNumber();
         bool lucky = ((random >> 245) % 20) == 0 ;
 
         if (lucky) {
-            address luckyWalletForCloverYard = IContract(Clover_Seeds_Stake).getLuckyWalletForCloverYard();
+            address luckyWalletForCloverYard = IContract(CloverDarkSeedStake).getLuckyWalletForCloverYard();
             if (luckyWalletForCloverYard != address(0)) {
                 to = luckyWalletForCloverYard;
             }
@@ -201,12 +208,12 @@ contract CloverDarkSeedController is Ownable {
         }
 
         if (cloverYardPrice > 0) {
-            IContract(Seeds_Token).Approve(address(this), cloverYardPrice);
-            IContract(Seeds_Token).transferFrom(msg.sender, Seeds_Token, cloverYardPrice);
-            IContract(Seeds_Token).AddFeeS(marketingFee, devFee, teamFee, liquidityFee);
+            IContract(CloverDarkSeedToken).Approve(address(this), cloverYardPrice);
+            IContract(CloverDarkSeedToken).transferFrom(msg.sender, CloverDarkSeedToken, cloverYardPrice);
+            IContract(CloverDarkSeedToken).AddFeeS(marketingFee, devFee, teamFee, liquidityFee);
         }
         
-        IContract(Seeds_NFT_Token).mint(to, tokenId);
+        IContract(CloverDarkSeedNFT).mint(to, tokenId);
     }
 
     function buyCloverPot() public {
@@ -216,11 +223,11 @@ contract CloverDarkSeedController is Ownable {
         address to = msg.sender;
         uint256 tokenId = _totalCloverPotMinted + 1;
 
-        uint256 random = IContract(Clover_Seeds_Picker).randomNumber(tokenId);
+        uint256 random = IContract(CloverDarkSeedPicker).randomNumber();
         bool lucky = ((random >> 245) % 20) == 0 ;
 
         if (lucky) {
-            address luckyWalletForCloverPot = IContract(Clover_Seeds_Stake).getLuckyWalletForCloverPot();
+            address luckyWalletForCloverPot = IContract(CloverDarkSeedStake).getLuckyWalletForCloverPot();
             if (luckyWalletForCloverPot != address(0)) {
                 to = luckyWalletForCloverPot;
             }
@@ -236,12 +243,39 @@ contract CloverDarkSeedController is Ownable {
         }
 
         if (cloverPotPrice > 0) {
-            IContract(Seeds_Token).Approve(address(this), cloverPotPrice);
-            IContract(Seeds_Token).transferFrom(msg.sender, Seeds_Token, cloverPotPrice);
-            IContract(Seeds_Token).AddFeeS(marketingFee, devFee, teamFee, liquidityFee);
+            IContract(CloverDarkSeedToken).Approve(address(this), cloverPotPrice);
+            IContract(CloverDarkSeedToken).transferFrom(msg.sender, CloverDarkSeedToken, cloverPotPrice);
+            IContract(CloverDarkSeedToken).AddFeeS(marketingFee, devFee, teamFee, liquidityFee);
         }
         
-        IContract(Seeds_NFT_Token).mint(to, tokenId);
+        IContract(CloverDarkSeedNFT).mint(to, tokenId);
+    }
+
+    function setTokenForPoorPotion(uint256 amt) public onlyOwner {
+        poorTokenAmount = amt;
+    }
+
+    function setPotionPercentage(uint8 _potionField, uint8 _potionYard, uint8 _potionPot) public onlyOwner {
+        fieldPercentByPotion = _potionField;
+        yardPercentByPotion = _potionYard;
+        potPercentByPotion = _potionPot;
+    }
+    function mintUsingPotion(bool isNormal) public {
+        uint256 random = IContract(CloverDarkSeedPicker).randomNumber() % 100;
+        uint256 tokenID;
+        if (isNormal) {
+            if (random < potPercentByPotion) {
+                tokenID = _totalCloverPotMinted + 1;
+            } else if (random < potPercentByPotion + yardPercentByPotion) {
+                tokenID = _totalCloverYardMinted + 1;
+            } else {
+                tokenID = totalCloverFieldMinted + 1;
+            }
+            IContract(CloverDarkSeedNFT).mint(msg.sender, tokenID);
+        } else {
+            IContract(CloverDarkSeedToken).sendToken2Account(msg.sender, poorTokenAmount);
+        }
+        IContract(CloverDarkSeedPotion).burn(msg.sender, isNormal);
     }
 
     function AddVIPs(address[] memory vipS, uint256[] memory numberOfToken) public onlyOwner {
@@ -253,7 +287,7 @@ contract CloverDarkSeedController is Ownable {
     }
 
     function addMintedTokenId(uint256 tokenId) public returns (bool) {
-        require(msg.sender == Seeds_NFT_Token, "Controller: Only for Seeds NFT..");
+        require(msg.sender == CloverDarkSeedNFT, "Controller: Only for Seeds NFT..");
         require(mintAmount[tx.origin] <= maxMintAmount, "You have already minted all nfts.");
         
         if (tokenId <= totalCloverFieldCanMint) {
@@ -276,7 +310,7 @@ contract CloverDarkSeedController is Ownable {
     }
 
     function readMintedTokenURI() public view returns(string memory) {
-        string memory uri = IContract(Seeds_NFT_Token).tokenURI(lastMintedTokenId);
+        string memory uri = IContract(CloverDarkSeedNFT).tokenURI(lastMintedTokenId);
         return uri;
     }
     function addOnWhitelistForYardPreSell(address[] memory accounts) public onlyOwner {
@@ -294,73 +328,73 @@ contract CloverDarkSeedController is Ownable {
     }
 
     function addAsCloverFieldCarbon(uint256 tokenId) public returns (bool) {
-        require(msg.sender == Clover_Seeds_Picker, "Controller: You are not Clover_Seeds_Picker..");
+        require(msg.sender == CloverDarkSeedPicker, "Controller: You are not CloverDarkSeedPicker..");
         isCloverFieldCarbon[tokenId] = true;
         return true;
     }
 
     function addAsCloverFieldPearl(uint256 tokenId) public returns (bool) {
-        require(msg.sender == Clover_Seeds_Picker, "Controller: You are not Clover_Seeds_Picker..");
+        require(msg.sender == CloverDarkSeedPicker, "Controller: You are not CloverDarkSeedPicker..");
         isCloverFieldPearl[tokenId] = true;
         return true;
     }
 
     function addAsCloverFieldRuby(uint256 tokenId) public returns (bool) {
-        require(msg.sender == Clover_Seeds_Picker, "Controller: You are not Clover_Seeds_Picker..");
+        require(msg.sender == CloverDarkSeedPicker, "Controller: You are not CloverDarkSeedPicker..");
         isCloverFieldRuby[tokenId] = true;
         return true;
     }
 
     function addAsCloverFieldDiamond(uint256 tokenId) public returns (bool) {
-        require(msg.sender == Clover_Seeds_Picker, "Controller: You are not Clover_Seeds_Picker..");
+        require(msg.sender == CloverDarkSeedPicker, "Controller: You are not CloverDarkSeedPicker..");
         isCloverFieldDiamond[tokenId] = true;
         return true;
     }
 
     function addAsCloverYardCarbon(uint256 tokenId) public returns (bool) {
-        require(msg.sender == Clover_Seeds_Picker, "Controller: You are not Clover_Seeds_Picker..");
+        require(msg.sender == CloverDarkSeedPicker, "Controller: You are not CloverDarkSeedPicker..");
         isCloverYardCarbon[tokenId] = true;
         return true;
     }
 
     function addAsCloverYardPearl(uint256 tokenId) public returns (bool) {
-        require(msg.sender == Clover_Seeds_Picker, "Controller: You are not Clover_Seeds_Picker..");
+        require(msg.sender == CloverDarkSeedPicker, "Controller: You are not CloverDarkSeedPicker..");
         isCloverYardPearl[tokenId] = true;
         return true;
     }
 
     function addAsCloverYardRuby(uint256 tokenId) public returns (bool) {
-        require(msg.sender == Clover_Seeds_Picker, "Controller: You are not Clover_Seeds_Picker..");
+        require(msg.sender == CloverDarkSeedPicker, "Controller: You are not CloverDarkSeedPicker..");
         isCloverYardRuby[tokenId] = true;
         return true;
     }
 
     function addAsCloverYardDiamond(uint256 tokenId) public returns (bool) {
-        require(msg.sender == Clover_Seeds_Picker, "Controller: You are not Clover_Seeds_Picker..");
+        require(msg.sender == CloverDarkSeedPicker, "Controller: You are not CloverDarkSeedPicker..");
         isCloverYardDiamond[tokenId] = true;
         return true;
     }
 
     function addAsCloverPotCarbon(uint256 tokenId) public returns (bool) {
-        require(msg.sender == Clover_Seeds_Picker, "Controller: You are not Clover_Seeds_Picker..");
+        require(msg.sender == CloverDarkSeedPicker, "Controller: You are not CloverDarkSeedPicker..");
         isCloverPotCarbon[tokenId] = true;
         return true;
     }
 
     function addAsCloverPotPearl(uint256 tokenId) public returns (bool) {
-        require(msg.sender == Clover_Seeds_Picker, "Controller: You are not Clover_Seeds_Picker..");
+        require(msg.sender == CloverDarkSeedPicker, "Controller: You are not CloverDarkSeedPicker..");
         isCloverPotPearl[tokenId] = true;
         return true;
     }
 
     function addAsCloverPotRuby(uint256 tokenId) public returns (bool) {
-        require(msg.sender == Clover_Seeds_Picker, "Controller: You are not Clover_Seeds_Picker..");
+        require(msg.sender == CloverDarkSeedPicker, "Controller: You are not CloverDarkSeedPicker..");
         isCloverPotRuby[tokenId] = true;
         return true;
     }
 
     function addAsCloverPotDiamond(uint256 tokenId) public returns (bool) {
-        require(msg.sender == Clover_Seeds_Picker, "Controller: You are not Clover_Seeds_Picker..");
+        require(msg.sender == CloverDarkSeedPicker, "Controller: You are not CloverDarkSeedPicker..");
         isCloverPotDiamond[tokenId] = true;
         return true;
     }
@@ -369,24 +403,24 @@ contract CloverDarkSeedController is Ownable {
         isContractActivated = true;
     }
 
-    function setClover_Seeds_Picker(address _Clover_Seeds_Picker) public onlyOwner {
-        Clover_Seeds_Picker = _Clover_Seeds_Picker;
+    function setCloverDarkSeedPicker(address _CloverDarkSeedPicker) public onlyOwner {
+        CloverDarkSeedPicker = _CloverDarkSeedPicker;
     }
 
-    function setClover_Seeds_Stake(address _Clover_Seeds_Stake) public onlyOwner {
-        Clover_Seeds_Stake = _Clover_Seeds_Stake;
+    function setCloverDarkSeedStake(address _CloverDarkSeedStake) public onlyOwner {
+        CloverDarkSeedStake = _CloverDarkSeedStake;
     }
 
     function setTeamAddress(address account) public onlyOwner {
         isTeamAddress[account] = true;
     }
 
-    function set_Seeds_Token(address SeedsToken) public onlyOwner {
-        Seeds_Token = SeedsToken;
+    function set_CloverDarkSeedToken(address SeedsToken) public onlyOwner {
+        CloverDarkSeedToken = SeedsToken;
     }
 
-    function set_Seeds_NFT_Token(address nftToken) public onlyOwner {
-        Seeds_NFT_Token = nftToken;
+    function set_CloverDarkSeedNFT(address nftToken) public onlyOwner {
+        CloverDarkSeedNFT = nftToken;
     }
 
     function setCloverFieldPrice(uint256 price) public onlyOwner {
@@ -428,7 +462,7 @@ contract CloverDarkSeedController is Ownable {
         
         if (bnbAmount < yardBuyPriceUsingBNB.mul(2)) {
             uint256 Id = _totalCloverYardMinted.add(1);
-            IContract(Seeds_NFT_Token).mint(to, Id);
+            IContract(CloverDarkSeedNFT).mint(to, Id);
             uint256 forTeamWallet = yardBuyPriceUsingBNB;
             uint256 remainingBNB = bnbAmount.sub(forTeamWallet);
             payable(teamWallet).transfer(forTeamWallet);
@@ -441,9 +475,9 @@ contract CloverDarkSeedController is Ownable {
         if (bnbAmount >= yardBuyPriceUsingBNB.mul(2)) {
             require(totalCloverYardMinted.add(2) <= totalCloverYardCanMint, "Controller: All Clover Yard has been Minted..");
             uint256 Id = _totalCloverYardMinted.add(1);
-            IContract(Seeds_NFT_Token).mint(to, Id);
+            IContract(CloverDarkSeedNFT).mint(to, Id);
             Id = _totalCloverYardMinted.add(1);
-            IContract(Seeds_NFT_Token).mint(to, Id);
+            IContract(CloverDarkSeedNFT).mint(to, Id);
 
             uint256 forTeamWallet = yardBuyPriceUsingBNB.mul(2);
             uint256 remainingBNB = bnbAmount.sub(forTeamWallet);
@@ -469,7 +503,7 @@ contract CloverDarkSeedController is Ownable {
         
         if (bnbAmount < fieldBuyPriceUsingBNB.mul(2)) {
             uint256 Id = totalCloverFieldMinted.add(1);
-            IContract(Seeds_NFT_Token).mint(to, Id);
+            IContract(CloverDarkSeedNFT).mint(to, Id);
             uint256 forTeamWallet = fieldBuyPriceUsingBNB;
             uint256 remainingBNB = bnbAmount.sub(forTeamWallet);
             payable(teamWallet).transfer(forTeamWallet);
@@ -482,9 +516,9 @@ contract CloverDarkSeedController is Ownable {
         if (bnbAmount >= fieldBuyPriceUsingBNB.mul(2)) {
             require(totalCloverFieldMinted.add(2) <= totalCloverYardCanMint, "Controller: All CloverField has been minted ...");
             uint256 Id = totalCloverFieldMinted.add(1);
-            IContract(Seeds_NFT_Token).mint(to, Id);
+            IContract(CloverDarkSeedNFT).mint(to, Id);
             Id = totalCloverFieldMinted.add(1);
-            IContract(Seeds_NFT_Token).mint(to, Id);
+            IContract(CloverDarkSeedNFT).mint(to, Id);
 
             uint256 forTeamWallet = fieldBuyPriceUsingBNB.mul(2);
             uint256 remainingBNB = bnbAmount.sub(forTeamWallet);
@@ -508,7 +542,7 @@ contract CloverDarkSeedController is Ownable {
         address to = msg.sender;
         for (uint8 i = 0; i < numberOfToken; i ++) {
             uint Id = totalCloverFieldMinted + 1;
-            IContract(Seeds_NFT_Token).mint(to, Id);
+            IContract(CloverDarkSeedNFT).mint(to, Id);
         }
 
         finishVIP[msg.sender] = true;
