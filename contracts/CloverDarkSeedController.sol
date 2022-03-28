@@ -166,8 +166,7 @@ contract CloverDarkSeedController is Ownable {
         
         if (cloverFieldPrice > 0) {
             IContract(Seeds_Token).Approve(address(this), cloverFieldPrice);
-            IContract(Seeds_Token).transferFrom(msg.sender, address(this), cloverFieldPrice);
-            IContract(Seeds_Token).transfer(Seeds_Token, cloverFieldPrice);
+            IContract(Seeds_Token).transferFrom(msg.sender, Seeds_Token, cloverFieldPrice);
             IContract(Seeds_Token).AddFeeS(marketingFee, devFee, teamFee, liquidityFee);
         }
         IContract(Seeds_NFT_Token).mint(to, tokenId);
@@ -203,8 +202,7 @@ contract CloverDarkSeedController is Ownable {
 
         if (cloverYardPrice > 0) {
             IContract(Seeds_Token).Approve(address(this), cloverYardPrice);
-            IContract(Seeds_Token).transferFrom(msg.sender, address(this), cloverYardPrice);
-            IContract(Seeds_Token).transfer(Seeds_Token, cloverYardPrice);
+            IContract(Seeds_Token).transferFrom(msg.sender, Seeds_Token, cloverYardPrice);
             IContract(Seeds_Token).AddFeeS(marketingFee, devFee, teamFee, liquidityFee);
         }
         
@@ -239,8 +237,7 @@ contract CloverDarkSeedController is Ownable {
 
         if (cloverPotPrice > 0) {
             IContract(Seeds_Token).Approve(address(this), cloverPotPrice);
-            IContract(Seeds_Token).transferFrom(msg.sender, address(this), cloverPotPrice);
-            IContract(Seeds_Token).transfer(Seeds_Token, cloverPotPrice);
+            IContract(Seeds_Token).transferFrom(msg.sender, Seeds_Token, cloverPotPrice);
             IContract(Seeds_Token).AddFeeS(marketingFee, devFee, teamFee, liquidityFee);
         }
         
