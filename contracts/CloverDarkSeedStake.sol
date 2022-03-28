@@ -66,12 +66,13 @@ contract CloverDarkSeedStake is Ownable {
     mapping (address => uint256) public depositedCloverPotRuby;
     mapping (address => uint256) public depositedCloverPotDiamond;
 
+    mapping (address => uint256) public claimableRewards;
+
     mapping (address => uint256) public stakingTime;
     mapping (address => uint256) public totalDepositedTokens;
     mapping (address => uint256) public totalEarnedTokens;
     mapping (address => uint256) public lastClaimedTime;
     mapping (address => uint256) public lastWatered;
-    mapping (address => uint256) public wastedTime;
     mapping (address => bool) public noMarketingList;
 
     IterableMapping.Map private _owners;
@@ -128,30 +129,14 @@ contract CloverDarkSeedStake is Ownable {
     }
 
     function updateAccount(address account) private {
-        uint256 _lastWatered = block.timestamp.sub(lastWatered[account]);
         uint256 pendingDivs = getPendingDivs(account);
-        uint256 _marketignFee = pendingDivs.mul(marketingFee).div(1e4);
-        uint256 afterFee = pendingDivs.sub(_marketignFee);
-
-        require(_lastWatered <= waterInterval, "Please give water your plant..");
-        
-        if (pendingDivs > 0) {
-            if (!isMarketingFeeActivated || noMarketingList[account]) {
-                require(IContract(DarkSeedToken).sendToken2Account(account, pendingDivs), "Can't transfer tokens!");
-                totalEarnedTokens[account] = totalEarnedTokens[account].add(pendingDivs);
-                totalClaimedRewards = totalClaimedRewards.add(pendingDivs);
-                emit RewardsTransferred(account, pendingDivs);
-            } else {
-                require(IContract(DarkSeedToken).sendToken2Account(account, afterFee), "Can't transfer tokens!");
-                require(IContract(DarkSeedToken).sendToken2Account(marketingWallet, marketingFee), "Can't transfer tokens.");
-                totalEarnedTokens[account] = totalEarnedTokens[account].add(afterFee);
-                totalClaimedRewards = totalClaimedRewards.add(afterFee);
-                emit RewardsTransferred(account, afterFee);
-            }
-        }
-
         lastClaimedTime[account] = block.timestamp;
-        wastedTime[account] = 0;
+        claimableRewards[account] += pendingDivs;
+    }
+
+    function estimateRewards(address account) public returns(uint256) {
+        updateAccount(account);
+        return claimableRewards[account];
     }
     
     function getPendingDivs(address _holder) public view returns (uint256) {
@@ -169,7 +154,26 @@ contract CloverDarkSeedStake is Ownable {
     
     function claimDivs() public {
         require(canClaimReward, "Please waite to enable this function..");
-        updateAccount(msg.sender);
+        address account = msg.sender;
+        updateAccount(account);
+        if (claimableRewards[account] > 0){
+            uint256 rewards = claimableRewards[account];
+            uint256 _marketingFee = rewards * marketingFee / 10000;
+            uint256 afterFee = rewards - _marketingFee;
+            if (!isMarketingFeeActivated || noMarketingList[account]) {
+                require(IContract(DarkSeedToken).sendToken2Account(account, rewards), "Can't transfer tokens!");
+                totalEarnedTokens[account] = totalEarnedTokens[account].add(rewards);
+                totalClaimedRewards = totalClaimedRewards.add(rewards);
+                emit RewardsTransferred(account, rewards);
+            } else {
+                require(IContract(DarkSeedToken).sendToken2Account(account, afterFee), "Can't transfer tokens!");
+                require(IContract(DarkSeedToken).sendToken2Account(marketingWallet, marketingFee), "Can't transfer tokens.");
+                totalEarnedTokens[account] = totalEarnedTokens[account].add(afterFee);
+                totalClaimedRewards = totalClaimedRewards.add(rewards);
+                emit RewardsTransferred(account, afterFee);
+            }
+        }
+        claimableRewards[account] = 0;
     }
 
     function updateRewardInterval(uint256 _sec) public onlyOwner {
@@ -200,11 +204,14 @@ contract CloverDarkSeedStake is Ownable {
     function getTimeDiff(address _holder) internal view returns (uint256) {
         require(holders.contains(_holder), "You are not a holder!");
         require(totalDepositedTokens[_holder] > 0, "You have no tokens!");
-        uint256 time = wastedTime[_holder];
-        uint256 timeDiff = block.timestamp.sub(lastClaimedTime[_holder]).sub(time);
-        if (timeDiff > waterInterval) {
-            timeDiff = waterInterval;
-        }
+        uint256 wastedTime = 0;
+        if (block.timestamp - lastWatered[msg.sender] > waterInterval) {
+            wastedTime = block.timestamp - lastWatered[msg.sender] - waterInterval;
+        } 
+        uint256 timeDiff = block.timestamp.sub(lastClaimedTime[_holder]);
+        if (timeDiff > wastedTime) {
+            timeDiff -= wastedTime;
+        } 
         return timeDiff;
     }
 
@@ -361,17 +368,8 @@ contract CloverDarkSeedStake is Ownable {
     function stake(uint256[] memory tokenId) public {
         require(isStakingEnabled, "Staking is not activeted yet..");
 
-        uint256 pendingDivs = getPendingDivs(msg.sender);
-
-        if (pendingDivs > 0) {
-            updateAccount(msg.sender);
-        }
-
-        if (pendingDivs == 0) {
-            lastClaimedTime[msg.sender] = block.timestamp;
-            lastWatered[msg.sender] = block.timestamp;
-        }
-
+        updateAccount(msg.sender);
+        
         for (uint256 i = 0; i < tokenId.length; i++) {
 
             IContract(DarkSeedNFT).setApprovalForAll_(address(this));
@@ -432,6 +430,7 @@ contract CloverDarkSeedStake is Ownable {
         if (!holders.contains(msg.sender) && totalDepositedTokens[msg.sender] > 0) {
             holders.add(msg.sender);
             stakingTime[msg.sender] = block.timestamp;
+            lastWatered[msg.sender] = block.timestamp;
         }
     }
     
@@ -503,13 +502,7 @@ contract CloverDarkSeedStake is Ownable {
     }
 
     function water() public {
-        uint256 _lastWatered = block.timestamp.sub(lastWatered[msg.sender]);
-        
-        if (_lastWatered > waterInterval) {
-            uint256 time = _lastWatered.sub(waterInterval);
-            wastedTime[msg.sender] = wastedTime[msg.sender].add(time);
-        }
-
+        updateAccount(msg.sender);
         lastWatered[msg.sender] = block.timestamp;
     }
 
