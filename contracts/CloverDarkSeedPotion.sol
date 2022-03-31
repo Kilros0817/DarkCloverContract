@@ -56,7 +56,7 @@ contract CloverDarkSeedPotion is ERC721Enumerable, ERC721URIStorage, Ownable, ER
         potionPrice = _potionPrice;
     }
 
-    function sestPotionPercent(uint8 _potionPercent) public onlyOwner {
+    function setPotionPercent(uint8 _potionPercent) public onlyOwner {
         potionPercent = _potionPercent;
     }
 
