@@ -22,11 +22,11 @@ contract CloverDarkSeedPotion is ERC721Enumerable, ERC721URIStorage, Ownable, ER
 
     string public normalPotionURI;
     string public poorPotionURI;
-    address public CloverSeedToken;
+    address public CloverDarkSeedToken;
     address public marketingWallet;
 
-    constructor(address _CloverSeedToken, address _marketingWallet) ERC721("Dark Clover DSEED$ Potion", "DCSPNFT") {
-        CloverSeedToken = _CloverSeedToken;
+    constructor(address _CloverDarkSeedToken, address _marketingWallet) ERC721("Dark Clover DSEED$ Potion", "DCSPNFT") {
+        CloverDarkSeedToken = _CloverDarkSeedToken;
         marketingWallet = _marketingWallet;
     }
 
@@ -43,8 +43,8 @@ contract CloverDarkSeedPotion is ERC721Enumerable, ERC721URIStorage, Ownable, ER
         }
 
         if (potionPrice > 0) {
-            IContract(CloverSeedToken).Approve(address(this), potionPrice);
-            IContract(CloverSeedToken).transferFrom(msg.sender, marketingWallet, potionPrice);
+            IContract(CloverDarkSeedToken).Approve(address(this), potionPrice);
+            IContract(CloverDarkSeedToken).transferFrom(msg.sender, marketingWallet, potionPrice);
         }
         _safeMint(to, tokenID);
     }
