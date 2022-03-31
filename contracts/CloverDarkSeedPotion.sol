@@ -26,8 +26,7 @@ contract CloverDarkSeedPotion is ERC721Enumerable, ERC721URIStorage, Ownable, ER
     address public CloverSeedToken;
     address public marketingWallet;
 
-    constructor(address _CloverSeedToken, address _marketingWallet) ERC721("Dark Clover DSEED$ Potion", "DCSPNFT") {
-        CloverSeedToken = _CloverSeedToken;
+    constructor(address _marketingWallet) ERC721("Dark Clover DSEED$ Potion", "DCSPNFT") {
         marketingWallet = _marketingWallet;
     }
 
