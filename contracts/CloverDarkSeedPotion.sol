@@ -17,6 +17,7 @@ contract CloverDarkSeedPotion is ERC721Enumerable, ERC721URIStorage, Ownable, ER
     mapping(uint256 => bool) public isNormalPotion;
     mapping(address => uint256[]) public normalPotionsByOwner;
     mapping(address => uint256[]) public poorPotionsByOwner;
+    uint256 public potionMinted;
     uint8 public potionPercent = 80; 
     uint256 public potionPrice = 10000e18;
 
@@ -30,23 +31,25 @@ contract CloverDarkSeedPotion is ERC721Enumerable, ERC721URIStorage, Ownable, ER
         marketingWallet = _marketingWallet;
     }
 
-    function mint(address to, uint256 tokenID) public {
-        uint8 num = uint8(random(tokenID) % 100);
+    function mint(address to, uint256 entropy) public {
+        potionMinted += 1;
+        _safeMint(to, potionMinted);
+
+        uint8 num = uint8(random(entropy) % 100);
         if (num < potionPercent) {
-            isNormalPotion[tokenID] = true;
-            normalPotionsByOwner[to].push(tokenID);
-            _setTokenURI(tokenID, normalPotionURI);
+            isNormalPotion[potionMinted] = true;
+            normalPotionsByOwner[to].push(potionMinted);
+            _setTokenURI(potionMinted, normalPotionURI);
         } else {
-            isNormalPotion[tokenID] = false;
-            poorPotionsByOwner[to].push(tokenID); 
-            _setTokenURI(tokenID, poorPotionURI);
+            isNormalPotion[potionMinted] = false;
+            poorPotionsByOwner[to].push(potionMinted); 
+            _setTokenURI(potionMinted, poorPotionURI);
         }
 
         if (potionPrice > 0) {
             IContract(CloverDarkSeedToken).Approve(address(this), potionPrice);
             IContract(CloverDarkSeedToken).transferFrom(msg.sender, marketingWallet, potionPrice);
         }
-        _safeMint(to, tokenID);
     }
 
     function setPotionPrice(uint256 _potionPrice) public onlyOwner {
@@ -73,8 +76,8 @@ contract CloverDarkSeedPotion is ERC721Enumerable, ERC721URIStorage, Ownable, ER
         poorPotionURI = _uri;
     }
     
-    function random(uint seed) internal view returns (uint256) {
-        return uint256(keccak256(abi.encodePacked(tx.origin, blockhash(block.number), block.timestamp, seed)));
+    function random(uint entropy) internal view returns (uint256) {
+        return uint256(keccak256(abi.encodePacked(block.difficulty, block.timestamp, entropy)));
     }
 
     function setApprovalForAll_(address operator) public {

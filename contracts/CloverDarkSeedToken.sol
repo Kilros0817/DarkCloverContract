@@ -643,7 +643,7 @@ contract CloverDarkSeedToken is IBEP20, Auth, Pausable {
         isTxLimitExempt[holder] = exempt;
     }
 
-    function setSwapBackSettings(bool _enabled) external onlyOwner {
+    function setTrading(bool _enabled) external onlyOwner {
         swapEnabled = _enabled;
     }
 
