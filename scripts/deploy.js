@@ -22,11 +22,15 @@ async function main() {
   console.log("CloverDarkSeedToken deployed to:", seedFTContract.address);
   const seedFT_address = seedFTContract.address;
 
+  const seedPotionContract = await seedPotion.deploy(seedFT_address, marketing_address);
+  console.log("CloverDarkSeedPotion deployed to:", seedPotionContract.address);
+  const seedPotion_address = seedPotionContract.address;
+
   const seedNFTContract = await seedNFT.deploy(seedFT_address);
   console.log("CloverDarkSeedNFT deployed to:", seedNFTContract.address);
   const seedNFT_address = seedNFTContract.address;
 
-  const seedControllerContract = await seedController.deploy(team_address, seedFT_address, seedNFT_address) ;
+  const seedControllerContract = await seedController.deploy(team_address, seedFT_address, seedNFT_address, seedPotion_address) ;
   console.log("CloverDarkSeedController deployed to:", seedControllerContract.address);
   const seedController_address = seedControllerContract.address;
 
@@ -37,8 +41,7 @@ async function main() {
   const seedStakeContract = await seedStake.deploy(marketing_address, seedFT_address, seedNFT_address, seedController_address, seedPicker_address);
   console.log("CloverDarkSeedStake deployed to:", seedStakeContract.address);
 
-  const seedPotionContract = await seedPotion.deploy(seedFT_address, marketing_address);
-  console.log("CloverDarkSeedPotion deployed to:", seedPotionContract.address);
+
 
 }
 
