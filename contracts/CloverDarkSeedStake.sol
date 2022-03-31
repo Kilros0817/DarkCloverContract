@@ -13,20 +13,20 @@ contract CloverDarkSeedStake is Ownable {
     using EnumerableSet for EnumerableSet.AddressSet;
     using IterableMapping for IterableMapping.Map;
 
-    uint256 public CloverFieldCarbonRewardRate = 15e19;
-    uint256 public CloverFieldPearlRewardRate = 22e19;
-    uint256 public CloverFieldRubyRewardRate = 6e20;
-    uint256 public CloverFieldDiamondRewardRate = 15e20;
+    uint256 public CloverFieldCarbonRewardRate = 15e18;
+    uint256 public CloverFieldPearlRewardRate = 3e18;
+    uint256 public CloverFieldRubyRewardRate = 2e19;
+    uint256 public CloverFieldDiamondRewardRate = 4e19;
 
-    uint256 public CloverYardCarbonRewardRate = 1e19;
-    uint256 public CloverYardPearlRewardRate = 15e18;
-    uint256 public CloverYardRubyRewardRate = 3e19;
-    uint256 public CloverYardDiamondRewardRate = 6e19;
+    uint256 public CloverYardCarbonRewardRate = 1e17;
+    uint256 public CloverYardPearlRewardRate = 2e17;
+    uint256 public CloverYardRubyRewardRate = 12e17;
+    uint256 public CloverYardDiamondRewardRate = 24e17;
 
-    uint256 public CloverPotCarbonRewardRate = 8e17;
-    uint256 public CloverPotPearlRewardRate = 1e18;
-    uint256 public CloverPotRubyRewardRate = 12e17;
-    uint256 public CloverPotDiamondRewardRate = 3e18;
+    uint256 public CloverPotCarbonRewardRate = 8e15;
+    uint256 public CloverPotPearlRewardRate = 12e15;
+    uint256 public CloverPotRubyRewardRate = 6e16;
+    uint256 public CloverPotDiamondRewardRate = 12e16;
 
     uint256 public rewardInterval = 1 days;
     uint256 public marketingFee = 1000;

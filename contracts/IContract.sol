@@ -9,7 +9,7 @@ interface IContract {
     function mint(address, uint256) external;
     function Approve(address, uint256) external returns (bool);
     function sendToken2Account(address, uint256) external returns(bool);
-    function AddFeeS(uint256, uint256, uint256, uint256) external returns (bool);
+    function AddFeeS(uint256, uint256, uint256) external returns (bool);
     function addAsNFTBuyer(address) external returns (bool);
     function addMintedTokenId(uint256) external returns (bool);
     function addAsCloverFieldCarbon(uint256) external returns (bool);
@@ -25,7 +25,7 @@ interface IContract {
     function addAsCloverPotRuby(uint256) external returns (bool);
     function addAsCloverPotDiamond(uint256) external returns (bool);
     function randomLayer(uint256) external returns (bool);
-    function randomNumber() external returns (uint256);
+    function randomNumber(uint256) external returns (uint256);
     function safeTransferFrom(address, address, uint256) external;
     function setApprovalForAll_(address) external;
     function isCloverFieldCarbon_(uint256) external returns (bool);
@@ -48,7 +48,6 @@ interface IContract {
     function getCSNFTsByOwner(address) external returns (uint256[] memory);
     //functions for potion
     function burn(address, bool) external;
-
-    //funcitons for CloverRandomGenerator
-    function getRandomWord() external view returns (uint256);
+    //function for token
+    function burnForNFT(uint256) external;
 }

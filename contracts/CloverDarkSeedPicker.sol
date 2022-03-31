@@ -10,20 +10,20 @@ import "./Strings.sol";
 contract CloverDarkSeedPicker is Ownable {
     using SafeMath for uint256;
 
-    uint16 public totalCloverFieldCarbon = 330; // 33% for total Clover Field
-    uint16 public totalCloverFieldPearl = 330; // 33% for total Clover Field
-    uint16 public totalCloverFieldRuby = 330; // 33% for total Clover Field
-    uint16 public totalCloverFieldDiamond = 10; // 1% for total Clover Field
+    uint16 public totalCloverFieldCarbon = 494; // 49.4% for total Clover Field
+    uint16 public totalCloverFieldPearl = 494; // 49.4% for total Clover Field
+    uint16 public totalCloverFieldRuby = 10; // 1% for total Clover Field
+    uint16 public totalCloverFieldDiamond = 2; // 0.2% for total Clover Field
 
-    uint16 public totalCloverYardCarbon = 3300; // 33% for total Clover Yard
-    uint16 public totalCloverYardPearl = 3300; // 33% for total Clover Yard
-    uint16 public totalCloverYardRuby = 3300; // 33% for total Clover Yard
-    uint16 public totalCloverYardDiamond = 100; // 1% for total Clover Yard
+    uint16 public totalCloverYardCarbon = 4940; // 33% for total Clover Yard
+    uint16 public totalCloverYardPearl = 4940; // 33% for total Clover Yard
+    uint16 public totalCloverYardRuby = 100; // 33% for total Clover Yard
+    uint16 public totalCloverYardDiamond = 20; // 1% for total Clover Yard
 
-    uint16 public totalCloverPotCarbon = 33000; // 33% for total Clover Pot
-    uint16 public totalCloverPotPearl = 33000; // 33% for total Clover Pot
-    uint16 public totalCloverPotRuby = 33000; // 33% for total Clover Pot
-    uint16 public totalCloverPotDiamond = 1000; // 1% for total Clover Pot
+    uint16 public totalCloverPotCarbon = 49400; // 33% for total Clover Pot
+    uint16 public totalCloverPotPearl = 49400; // 33% for total Clover Pot
+    uint16 public totalCloverPotRuby = 1000; // 33% for total Clover Pot
+    uint16 public totalCloverPotDiamond = 200; // 1% for total Clover Pot
 
     uint16 public totalCloverFieldCarbonMinted;
     uint16 public totalCloverFieldPearlMinted;
@@ -56,16 +56,11 @@ contract CloverDarkSeedPicker is Ownable {
     string private _baseURIPotRuby;
     string private _baseURIPotDiamond;
 
-    address CloverRandomGenerator;
-    uint256 rand;
+    uint256 private rand;
 
     constructor(address _Seeds_NFT_Token, address _DarkSeedController) {
         DarkSeedController = _DarkSeedController;
         DarkSeedNFT = _Seeds_NFT_Token;
-    }
-
-    function setCloverRandomGenerator(address _CloverRandomGenerator) public onlyOwner {
-        CloverRandomGenerator = _CloverRandomGenerator;
     }
 
     function setBaseURIFieldCarbon(string calldata _uri) public onlyOwner {
@@ -105,8 +100,12 @@ contract CloverDarkSeedPicker is Ownable {
         _baseURIPotDiamond = _uri;
     }
 
-    function randomNumber() public returns (uint256) {
-        rand = IContract(CloverRandomGenerator).getRandomWord();
+    function randomNumber(uint256 entropy) public returns (uint256) {
+        rand = uint256(keccak256(abi.encodePacked(
+            block.difficulty,
+            block.timestamp,
+            entropy
+        )));
         return rand;
     }
 
@@ -121,44 +120,44 @@ contract CloverDarkSeedPicker is Ownable {
     function randomLayer(uint256 tokenId) public returns (bool) {
         require(msg.sender == DarkSeedNFT, "Clover_Seeds_Picker: You are not CloverDarkSeedNFT..");
         
-        uint8 num = uint8(rand >> 16 % 100);
+        uint16 num = uint8(rand >> 16 % 1000);
         if (tokenId <= 1e3) {
             if (totalCloverFieldDiamondMinted == totalCloverFieldDiamond) {
-                num = uint8(num % 99) + 1;
+                num = uint16(num % 998) + 2;
             }
             if (totalCloverFieldCarbonMinted == totalCloverFieldCarbon) {
-                num = uint8(num % 67);
-                if (num >= 1 && num <= 33) {
-                    num += 66;
+                num = uint16(num % 506);
+                if (num >= 2 && num <= 495) {
+                    num += 504;
                 }
             }
             if (totalCloverFieldPearlMinted == totalCloverFieldPearl) {
-                num = uint8(num % 67);
-                if (num >= 34 && num <= 66) {
-                    num += 33;
+                num = uint16(num % 506);
+                if (num >= 496 && num <= 505) {
+                    num += 494;
                 }
             }
             if (totalCloverFieldRubyMinted == totalCloverFieldRuby) {
-                num = uint8(num % 67);
+                num = uint16(num % 990);
             }
 
             string memory uri;
-            if (num == 0) {
+            if (num >= 0 && num <= 1) {
                 totalCloverFieldDiamondMinted++;
                 uri = string(abi.encodePacked(_baseURIFieldDiamond, Strings.toString(totalCloverFieldDiamondMinted)));
                 require(IContract(DarkSeedController).addAsCloverFieldDiamond(tokenId), "Clover_Seeds_Picker: Unable to call addAsCloverFieldDiamond..");
             }
-            if (num >= 1 && num <= 33) {
+            if (num >= 2 && num <= 495) {
                 totalCloverFieldCarbonMinted++;
                 uri = string(abi.encodePacked(_baseURIFieldCarbon, Strings.toString(totalCloverFieldCarbonMinted)));
                 require(IContract(DarkSeedController).addAsCloverFieldCarbon(tokenId), "Clover_Seeds_Picker: Unable to call addAsCloverFieldCarbon..");
             }
-            if (num >= 34 && num <= 66) {
+            if (num >= 496 && num <= 989) {
                 totalCloverFieldPearlMinted++;
                 uri = string(abi.encodePacked(_baseURIFieldPearl, Strings.toString(totalCloverFieldPearlMinted)));
                 require(IContract(DarkSeedController).addAsCloverFieldPearl(tokenId), "Clover_Seeds_Picker: Unable to call addAsCloverFieldPearl..");
             }
-            if (num >= 67 && num <= 99) {
+            if (num >= 990 && num <= 999) {
                 totalCloverFieldRubyMinted++;
                 uri = string(abi.encodePacked(_baseURIFieldRuby, Strings.toString(totalCloverFieldRubyMinted)));
                 require(IContract(DarkSeedController).addAsCloverFieldRuby(tokenId), "Clover_Seeds_Picker: Unable to call addAsCloverFieldRuby..");
@@ -167,41 +166,41 @@ contract CloverDarkSeedPicker is Ownable {
 
         } else if (tokenId <= 11e3) {
             if (totalCloverYardDiamondMinted == totalCloverYardDiamond) {
-                num = uint8(num % 99) + 1;
+                num = uint16(num % 998) + 2;
             }
             if (totalCloverYardCarbonMinted == totalCloverYardCarbon) {
-                num = uint8(num % 67);
-                if (num >= 1 && num <= 33) {
-                    num += 66;
+                num = uint16(num % 506);
+                if (num >= 2 && num <= 495) {
+                    num += 504;
                 }
             }
             if (totalCloverYardPearlMinted == totalCloverYardPearl) {
-                num = uint8(num % 67);
-                if (num >= 34 && num <= 66) {
-                    num += 33;
+                num = uint16(num % 506);
+                if (num >= 495 && num <= 505) {
+                    num += 494;
                 }
             }
             if (totalCloverYardRubyMinted == totalCloverYardRuby) {
-                num = uint8(num % 67);
+                num = uint16(num % 990);
             }
 
             string memory uri;
-            if (num == 0) {
+            if (num >= 0 && num <= 1) {
                 totalCloverYardDiamondMinted++;
                 uri = string(abi.encodePacked(_baseURIYardDiamond, Strings.toString(totalCloverYardDiamondMinted)));
                 require(IContract(DarkSeedController).addAsCloverYardDiamond(tokenId), "Clover_Seeds_Picker: Unable to call addAsCloverYardDiamond..");
             }
-            if (num >= 1 && num <= 33) {
+            if (num >= 2 && num <= 495) {
                 totalCloverYardCarbonMinted++;
                 uri = string(abi.encodePacked(_baseURIYardCarbon, Strings.toString(totalCloverYardCarbonMinted)));
                 require(IContract(DarkSeedController).addAsCloverYardCarbon(tokenId), "Clover_Seeds_Picker: Unable to call addAsCloverYardCarbon..");
             }
-            if (num >= 34 && num <= 66) {
+            if (num >= 496 && num <= 989) {
                 totalCloverYardPearlMinted++;
                 uri = string(abi.encodePacked(_baseURIYardPearl, Strings.toString(totalCloverYardPearlMinted)));
                 require(IContract(DarkSeedController).addAsCloverYardPearl(tokenId), "Clover_Seeds_Picker: Unable to call addAsCloverYardPearl..");
             }
-            if (num >= 67 && num <= 99) {
+            if (num >= 990 && num <= 999) {
                 totalCloverYardRubyMinted++;
                 uri = string(abi.encodePacked(_baseURIYardRuby, Strings.toString(totalCloverYardRubyMinted)));
                 require(IContract(DarkSeedController).addAsCloverYardRuby(tokenId), "Clover_Seeds_Picker: Unable to call addAsCloverYardRuby..");
@@ -211,41 +210,41 @@ contract CloverDarkSeedPicker is Ownable {
 
         } else {
             if (totalCloverPotDiamondMinted == totalCloverPotDiamond) {
-                num = uint8(num % 99) + 1;
+                num = uint16(num % 998) + 2;
             }
             if (totalCloverPotCarbonMinted == totalCloverPotCarbon) {
-                num = uint8(num % 67);
-                if (num >= 1 && num <= 33) {
-                    num += 66;
+                num = uint16(num % 506);
+                if (num >= 2 && num <= 495) {
+                    num += 504;
                 }
             }
             if (totalCloverPotPearlMinted == totalCloverPotPearl) {
-                num = uint8(num % 67);
-                if (num >= 34 && num <= 66) {
-                    num += 33;
+                num = uint8(num % 506);
+                if (num >= 496 && num <= 505) {
+                    num += 494;
                 }
             }
             if (totalCloverPotRubyMinted == totalCloverPotRuby) {
-                num = uint8(num % 67);
+                num = uint8(num % 990);
             }
 
             string memory uri;
-            if (num == 0) {
+            if (num >= 0 && num <= 1) {
                 totalCloverPotDiamondMinted++;
                 uri = string(abi.encodePacked(_baseURIPotDiamond, Strings.toString(totalCloverPotDiamondMinted)));
                 require(IContract(DarkSeedController).addAsCloverPotDiamond(tokenId), "Clover_Seeds_Picker: Unable to call addAsCloverPotDiamond..");
             }
-            if (num >= 1 && num <= 33) {
+            if (num >= 2 && num <= 495) {
                 totalCloverPotCarbonMinted++;
                 uri = string(abi.encodePacked(_baseURIPotCarbon, Strings.toString(totalCloverPotCarbonMinted)));
                 require(IContract(DarkSeedController).addAsCloverPotCarbon(tokenId), "Clover_Seeds_Picker: Unable to call addAsCloverPotCarbon..");
             }
-            if (num >= 34 && num <= 66) {
+            if (num >= 496 && num <= 989) {
                 totalCloverPotPearlMinted++;
                 uri = string(abi.encodePacked(_baseURIPotPearl, Strings.toString(totalCloverPotPearlMinted)));
                 require(IContract(DarkSeedController).addAsCloverPotPearl(tokenId), "Clover_Seeds_Picker: Unable to call addAsCloverPotPearl..");
             }
-            if (num >= 67 && num <= 99) {
+            if (num >= 990 && num <= 999) {
                 totalCloverPotRubyMinted++;
                 uri = string(abi.encodePacked(_baseURIPotRuby, Strings.toString(totalCloverPotRubyMinted)));
                 require(IContract(DarkSeedController).addAsCloverPotRuby(tokenId), "Clover_Seeds_Picker: Unable to call addAsCloverPotRuby..");
