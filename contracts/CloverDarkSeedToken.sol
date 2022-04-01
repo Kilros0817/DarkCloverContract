@@ -583,6 +583,7 @@ contract CloverDarkSeedToken is IBEP20, Auth, Pausable {
         uint16 sellBrun_,
         uint16 buyTeamFee_,
         uint16 buyLiquidityFee_,
+        uint16 buyMarketingFee_,
         uint16 marketingFeeWhenNoNFTs_,
         uint16 teamFeeWhenNoNFTs_,
         uint16 liquidityFeeWhenNoNFTs_,
@@ -594,6 +595,7 @@ contract CloverDarkSeedToken is IBEP20, Auth, Pausable {
         _sellBurn = sellBrun_;
         _buyTeamFee = buyTeamFee_;
         _buyLiquidityFee = buyLiquidityFee_;
+        _buyMarketingFee = buyMarketingFee_;
         _MarketingFeeWhenNoNFTs = marketingFeeWhenNoNFTs_;
         _TeamFeeWhenNoNFTs = teamFeeWhenNoNFTs_;
         _LiquidityFeeWhenNoNFTs = liquidityFeeWhenNoNFTs_;
