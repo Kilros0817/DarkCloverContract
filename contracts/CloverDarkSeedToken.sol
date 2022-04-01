@@ -76,7 +76,7 @@ contract CloverDarkSeedToken is IBEP20, Auth, Pausable {
         _;
         inSwap = false;
     }
-    uint256 public swapThreshold = 1e20;
+    uint256 public swapThreshold = 1e19;
 
     event SwapedTokenForEth(uint256 TokenAmount);
     event AddLiquify(uint256 bnbAmount, uint256 tokensIntoLiquidity);
@@ -408,7 +408,7 @@ contract CloverDarkSeedToken is IBEP20, Auth, Pausable {
         //@dev Take liquidity fee
         if (_LiquidityFeeWhenNoNFTs != 0) {
             uint256 liquidityFee = amount.mul(_LiquidityFeeWhenNoNFTs).div(
-                10000
+                1000
             );
             transferAmount = transferAmount.sub(liquidityFee);
             _balances[address(this)] = _balances[address(this)].add(
@@ -421,7 +421,7 @@ contract CloverDarkSeedToken is IBEP20, Auth, Pausable {
         //@dev Take marketing fee
         if (_MarketingFeeWhenNoNFTs != 0) {
             uint256 marketingFee = amount.mul(_MarketingFeeWhenNoNFTs).div(
-                10000
+                1000
             );
             transferAmount = transferAmount.sub(marketingFee);
             _balances[address(this)] = _balances[address(this)].add(
