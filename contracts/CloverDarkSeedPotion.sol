@@ -30,18 +30,18 @@ contract CloverDarkSeedPotion is ERC721Enumerable, ERC721URIStorage, Ownable, ER
         marketingWallet = _marketingWallet;
     }
 
-    function mint(address to, uint256 entropy) public {
+    function mint(uint256 entropy) public {
         potionMinted += 1;
-        _safeMint(to, potionMinted);
+        _safeMint(msg.sender, potionMinted);
 
         uint8 num = uint8(random(entropy) % 100);
         if (num < potionPercent) {
             isNormalPotion[potionMinted] = true;
-            normalPotionsByOwner[to].push(potionMinted);
+            normalPotionsByOwner[msg.sender].push(potionMinted);
             _setTokenURI(potionMinted, normalPotionURI);
         } else {
             isNormalPotion[potionMinted] = false;
-            poorPotionsByOwner[to].push(potionMinted); 
+            poorPotionsByOwner[msg.sender].push(potionMinted); 
             _setTokenURI(potionMinted, poorPotionURI);
         }
 
