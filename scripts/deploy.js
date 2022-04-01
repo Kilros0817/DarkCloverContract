@@ -22,7 +22,7 @@ async function main() {
   console.log("CloverDarkSeedToken deployed to:", seedFTContract.address);
   const seedFT_address = seedFTContract.address;
 
-  const seedPotionContract = await seedPotion.deploy(seedFT_address, marketing_address);
+  const seedPotionContract = await seedPotion.deploy(marketing_address);
   console.log("CloverDarkSeedPotion deployed to:", seedPotionContract.address);
   const seedPotion_address = seedPotionContract.address;
 
