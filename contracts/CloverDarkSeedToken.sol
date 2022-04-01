@@ -556,7 +556,7 @@ contract CloverDarkSeedToken is IBEP20, Auth, Pausable {
         path[0] = address(this);
         path[1] = router.WETH();
 
-        uint256[] memory amounts = IUniswapV2Router02(router).getAmountsOut(swapBalance, path);
+        uint256[] memory amounts = router.getAmountsOut(swapBalance, path);
         uint256 outAmount = amounts[amounts.length - 1];
         return outAmount;
     }
