@@ -14,9 +14,9 @@ contract CloverDarkSeedStake is Ownable {
     using IterableMapping for IterableMapping.Map;
 
     uint256 public CloverFieldCarbonRewardRate = 15e18;
-    uint256 public CloverFieldPearlRewardRate = 3e18;
-    uint256 public CloverFieldRubyRewardRate = 2e19;
-    uint256 public CloverFieldDiamondRewardRate = 4e19;
+    uint256 public CloverFieldPearlRewardRate = 3e19;
+    uint256 public CloverFieldRubyRewardRate = 2e20;
+    uint256 public CloverFieldDiamondRewardRate = 4e20;
 
     uint256 public CloverYardCarbonRewardRate = 1e17;
     uint256 public CloverYardPearlRewardRate = 2e17;

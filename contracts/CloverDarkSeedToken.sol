@@ -23,8 +23,8 @@ contract CloverDarkSeedToken is IBEP20, Auth, Pausable {
     uint8 constant _decimals = 18;
 
     uint256 _totalSupply = 1000000 * (10**_decimals);
-    uint256 public _maxTxAmount = (_totalSupply * 1) / 100;
-    uint256 public _maxWalletSize = (_totalSupply * 1) / 1000;
+    uint256 public _maxTxAmount = (_totalSupply * 1) / 1000;
+    uint256 public _maxWalletSize = (_totalSupply * 1) / 100;
 
     mapping(address => bool) blackList;
 
@@ -275,6 +275,7 @@ contract CloverDarkSeedToken is IBEP20, Auth, Pausable {
 
     function shouldSwapBack() internal view returns (bool) {
         return !inSwap
+        && swapEnabled
         && getBnbAmountForFee() >= swapThreshold;
     }
 

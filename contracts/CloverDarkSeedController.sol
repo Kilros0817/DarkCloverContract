@@ -46,7 +46,6 @@ contract CloverDarkSeedController is Ownable {
     bool public isContractActivated = false;
 
     mapping(address => bool) public isTeamAddress;
-    mapping(address => uint256) public availableTokenCanBuy;
     mapping(address => uint16) public mintAmount;
     
     mapping(uint256 => bool) private isCloverFieldCarbon;
@@ -64,9 +63,6 @@ contract CloverDarkSeedController is Ownable {
     mapping(uint256 => bool) private isCloverPotRuby;
     mapping(uint256 => bool) private isCloverPotDiamond;
     
-    mapping (address => uint256) public stakingTime;
-    mapping (address => uint256) public lastClaimedTime;
-
     mapping(uint256 => address) private _owners;
 
     uint256 private lastMintedTokenId ;
