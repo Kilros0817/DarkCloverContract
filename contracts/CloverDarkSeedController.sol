@@ -428,6 +428,10 @@ contract CloverDarkSeedController is Ownable {
         cloverPotPrice = price;
     }
 
+    function setCloverDarkPotion(address _CloverDarkSeedPotion) public onlyOwner {
+        CloverDarkSeedPotion = _CloverDarkSeedPotion;
+    }
+
     // function to allow admin to transfer *any* BEP20 tokens from this contract..
     function transferAnyBEP20Tokens(address tokenAddress, address recipient, uint256 amount) public onlyOwner {
         require(amount > 0, "SEED$ Controller: amount must be greater than 0");
