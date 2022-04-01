@@ -47,9 +47,9 @@ contract CloverDarkSeedToken is IBEP20, Auth, Pausable {
     uint16 public _buyLiquidityFee = 10;
     uint16 public _buyMarketingFee = 10;
 
-    uint16 public _TeamFeeWhenNoNFTs = 150;
+    uint16 public _TeamFeeWhenNoNFTs = 100;
     uint16 public _LiquidityFeeWhenNoNFTs = 60;
-    uint16 public _MarketingFeeWhenNoNFTs = 150;
+    uint16 public _MarketingFeeWhenNoNFTs = 100;
     uint16 public _burnWhenNoNFTs = 20;
 
     uint256 public _teamFeeTotal;
