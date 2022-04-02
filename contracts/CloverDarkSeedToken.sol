@@ -215,13 +215,13 @@ contract CloverDarkSeedToken is IBEP20, Auth, Pausable {
             return _basicTransfer(sender, recipient, amount);
         }
 
+        checkTxLimit(sender, amount);
+
         if (
             shouldSwapBack()
         ) {
             swapFee();
         }
-
-        checkTxLimit(sender, amount);
 
         if (recipient != pair) {
             require(
@@ -317,7 +317,7 @@ contract CloverDarkSeedToken is IBEP20, Auth, Pausable {
             teamFeeTotal += teamFee;
         }
 
-        //@dev Take liquidity fee
+        //@dev Take marketing fee
         if (_buyMarketingFee != 0) {
             uint256 marketingFee = amount.mul(_buyMarketingFee).div(1000);
             transferAmount -= marketingFee;
@@ -331,8 +331,8 @@ contract CloverDarkSeedToken is IBEP20, Auth, Pausable {
             uint256 liquidityFee = amount.mul(_buyLiquidityFee).div(1000);
             transferAmount -= liquidityFee;
             _balances[address(this)] += liquidityFee;
-            _liquidityFeeTotal = liquidityFee;
-            liquidityFeeTotal = liquidityFee;
+            _liquidityFeeTotal += liquidityFee;
+            liquidityFeeTotal += liquidityFee;
         }
 
         return transferAmount;
