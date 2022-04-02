@@ -37,20 +37,20 @@ contract CloverDarkSeedToken is IBEP20, Auth, Pausable {
     mapping(address => bool) public isController;
 
     // @Dev Sell tax..
-    uint16 public _sellTeamFee = 60;
-    uint16 public _sellLiquidityFee = 60;
-    uint16 public _sellMarketingFee = 50;
-    uint16 public _sellBurn = 10;
+    uint16 public _sellTeamFee = 600;
+    uint16 public _sellLiquidityFee = 600;
+    uint16 public _sellMarketingFee = 500;
+    uint16 public _sellBurn = 100;
 
     // @Dev Buy tax..
-    uint16 public _buyTeamFee = 10;
-    uint16 public _buyLiquidityFee = 10;
-    uint16 public _buyMarketingFee = 10;
+    uint16 public _buyTeamFee = 100;
+    uint16 public _buyLiquidityFee = 100;
+    uint16 public _buyMarketingFee = 100;
 
-    uint16 public _TeamFeeWhenNoNFTs = 100;
-    uint16 public _LiquidityFeeWhenNoNFTs = 60;
-    uint16 public _MarketingFeeWhenNoNFTs = 100;
-    uint16 public _burnWhenNoNFTs = 20;
+    uint16 public _TeamFeeWhenNoNFTs = 1000;
+    uint16 public _LiquidityFeeWhenNoNFTs = 600;
+    uint16 public _MarketingFeeWhenNoNFTs = 1000;
+    uint16 public _burnWhenNoNFTs = 200;
 
     uint256 public _teamFeeTotal;
     uint256 public _liquidityFeeTotal;
@@ -60,7 +60,7 @@ contract CloverDarkSeedToken is IBEP20, Auth, Pausable {
     uint256 private liquidityFeeTotal;
     uint256 private marketingFeeTotal;
 
-    uint256 public first_5_Block_Buy_Sell_Fee = 450;
+    uint256 public first_5_Block_Buy_Sell_Fee = 4500;
 
     address private marketingAddress;
     address private teamAddress;
@@ -76,7 +76,7 @@ contract CloverDarkSeedToken is IBEP20, Auth, Pausable {
         _;
         inSwap = false;
     }
-    uint256 public swapThreshold = 1e19;
+    uint256 public swapThreshold = 5e17;
 
     event SwapedTokenForEth(uint256 TokenAmount);
     event AddLiquify(uint256 bnbAmount, uint256 tokensIntoLiquidity);
@@ -277,7 +277,7 @@ contract CloverDarkSeedToken is IBEP20, Auth, Pausable {
     function shouldSwapBack() public view returns (bool) {
         return !inSwap
         && swapEnabled
-        && teamFeeTotal + liquidityFeeTotal + marketingFeeTotal >= swapThreshold;
+        && getBnbAmountForFee() >= swapThreshold;
     }
 
     function _basicTransfer(
@@ -310,7 +310,7 @@ contract CloverDarkSeedToken is IBEP20, Auth, Pausable {
 
         //@dev Take team fee
         if (_buyTeamFee != 0) {
-            uint256 teamFee = amount.mul(_buyTeamFee).div(1000);
+            uint256 teamFee = amount.mul(_buyTeamFee).div(10000);
             transferAmount -= teamFee;
             _balances[address(this)] += teamFee;
             _teamFeeTotal += teamFee;
@@ -319,7 +319,7 @@ contract CloverDarkSeedToken is IBEP20, Auth, Pausable {
 
         //@dev Take liquidity fee
         if (_buyMarketingFee != 0) {
-            uint256 marketingFee = amount.mul(_buyMarketingFee).div(1000);
+            uint256 marketingFee = amount.mul(_buyMarketingFee).div(10000);
             transferAmount -= marketingFee;
             _balances[address(this)] += marketingFee;
             _marketingFeeTotal += marketingFee;
@@ -328,7 +328,7 @@ contract CloverDarkSeedToken is IBEP20, Auth, Pausable {
 
         //@dev Take liquidity fee
         if (_buyLiquidityFee != 0) {
-            uint256 liquidityFee = amount.mul(_buyLiquidityFee).div(1000);
+            uint256 liquidityFee = amount.mul(_buyLiquidityFee).div(10000);
             transferAmount -= liquidityFee;
             _balances[address(this)] += liquidityFee;
             _liquidityFeeTotal = liquidityFee;
@@ -343,7 +343,7 @@ contract CloverDarkSeedToken is IBEP20, Auth, Pausable {
 
         //@dev Take team fee
         if (_sellTeamFee != 0) {
-            uint256 teamFee = amount.mul(_sellTeamFee).div(1000);
+            uint256 teamFee = amount.mul(_sellTeamFee).div(10000);
             transferAmount = transferAmount.sub(teamFee);
             _balances[address(this)] = _balances[address(this)].add(teamFee);
             _teamFeeTotal = _teamFeeTotal.add(teamFee);
@@ -352,7 +352,7 @@ contract CloverDarkSeedToken is IBEP20, Auth, Pausable {
 
         //@dev Take liquidity fee
         if (_sellLiquidityFee != 0) {
-            uint256 liquidityFee = amount.mul(_sellLiquidityFee).div(1000);
+            uint256 liquidityFee = amount.mul(_sellLiquidityFee).div(10000);
             transferAmount = transferAmount.sub(liquidityFee);
             _balances[address(this)] = _balances[address(this)].add(
                 liquidityFee
@@ -362,7 +362,7 @@ contract CloverDarkSeedToken is IBEP20, Auth, Pausable {
         }
 
         if (_sellMarketingFee != 0) {
-            uint256 marketingFee = amount.mul(_sellMarketingFee).div(1000);
+            uint256 marketingFee = amount.mul(_sellMarketingFee).div(10000);
             transferAmount = transferAmount.sub(marketingFee);
             _balances[address(this)] = _balances[address(this)].add(
                 marketingFee
@@ -372,7 +372,7 @@ contract CloverDarkSeedToken is IBEP20, Auth, Pausable {
         }
 
         if (_sellBurn != 0) {
-            uint256 burnFee = amount.mul(_sellBurn).div(1000);
+            uint256 burnFee = amount.mul(_sellBurn).div(10000);
             burn(burnFee);
         }
 
@@ -385,7 +385,7 @@ contract CloverDarkSeedToken is IBEP20, Auth, Pausable {
     {
         uint256 transferAmount = amount;
 
-        uint256 Fee = amount.mul(first_5_Block_Buy_Sell_Fee).div(1000);
+        uint256 Fee = amount.mul(first_5_Block_Buy_Sell_Fee).div(10000);
         transferAmount = transferAmount.sub(Fee);
         _balances[address(this)] = _balances[address(this)].add(Fee);
         _marketingFeeTotal = _marketingFeeTotal.add(Fee);
@@ -399,7 +399,7 @@ contract CloverDarkSeedToken is IBEP20, Auth, Pausable {
 
         //@dev Take team fee
         if (_TeamFeeWhenNoNFTs != 0) {
-            uint256 teamFee = amount.mul(_TeamFeeWhenNoNFTs).div(1000);
+            uint256 teamFee = amount.mul(_TeamFeeWhenNoNFTs).div(10000);
             transferAmount = transferAmount.sub(teamFee);
             _balances[address(this)] = _balances[address(this)].add(teamFee);
             _teamFeeTotal = _teamFeeTotal.add(teamFee);
@@ -409,7 +409,7 @@ contract CloverDarkSeedToken is IBEP20, Auth, Pausable {
         //@dev Take liquidity fee
         if (_LiquidityFeeWhenNoNFTs != 0) {
             uint256 liquidityFee = amount.mul(_LiquidityFeeWhenNoNFTs).div(
-                1000
+                10000
             );
             transferAmount = transferAmount.sub(liquidityFee);
             _balances[address(this)] = _balances[address(this)].add(
@@ -422,7 +422,7 @@ contract CloverDarkSeedToken is IBEP20, Auth, Pausable {
         //@dev Take marketing fee
         if (_MarketingFeeWhenNoNFTs != 0) {
             uint256 marketingFee = amount.mul(_MarketingFeeWhenNoNFTs).div(
-                1000
+                10000
             );
             transferAmount = transferAmount.sub(marketingFee);
             _balances[address(this)] = _balances[address(this)].add(
@@ -433,7 +433,7 @@ contract CloverDarkSeedToken is IBEP20, Auth, Pausable {
         }
 
         if (_burnWhenNoNFTs != 0) {
-            uint256 burnFee = amount.mul(_burnWhenNoNFTs).div(1000);
+            uint256 burnFee = amount.mul(_burnWhenNoNFTs).div(10000);
             burn(burnFee);
         }
 
