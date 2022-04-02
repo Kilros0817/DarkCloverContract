@@ -276,6 +276,7 @@ contract CloverDarkSeedToken is IBEP20, Auth, Pausable {
 
     function shouldSwapBack() public view returns (bool) {
         return !inSwap
+        && msg.sender != pair 
         && swapEnabled
         && getBnbAmountForFee() >= swapThreshold;
     }
