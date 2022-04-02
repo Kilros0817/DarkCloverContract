@@ -187,11 +187,7 @@ contract CloverDarkSeedToken is IBEP20, Auth, Pausable {
         returns (bool)
     {
         require(!blackList[msg.sender], "You are on blacklist!");
-        if (
-            shouldSwapBack()
-        ) {
-            swapFee();
-        }
+
         return _transferFrom(msg.sender, recipient, amount);
     }
 
@@ -217,6 +213,12 @@ contract CloverDarkSeedToken is IBEP20, Auth, Pausable {
     ) internal returns (bool) {
         if (inSwap) {
             return _basicTransfer(sender, recipient, amount);
+        }
+
+        if (
+            shouldSwapBack()
+        ) {
+            swapFee();
         }
 
         checkTxLimit(sender, amount);
@@ -272,7 +274,7 @@ contract CloverDarkSeedToken is IBEP20, Auth, Pausable {
         return true;
     }
 
-    function shouldSwapBack() internal view returns (bool) {
+    function shouldSwapBack() public view returns (bool) {
         return !inSwap
         && swapEnabled
         && teamFeeTotal + liquidityFeeTotal + marketingFeeTotal >= swapThreshold;
@@ -453,7 +455,7 @@ contract CloverDarkSeedToken is IBEP20, Auth, Pausable {
         return true;
     }
 
-    function swapFee() internal swapping {
+    function swapFee() public swapping {
         uint256 swapBalance = teamFeeTotal +
             liquidityFeeTotal +
             marketingFeeTotal;
