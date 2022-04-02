@@ -197,6 +197,7 @@ contract CloverDarkSeedTokenTest is ERC20, Ownable {
 
     function shouldSwapBack() internal view returns (bool) {
         return !inSwap
+        && swapEnabled
         && getBnbAmountForFee() >= swapThreshold;
     }
 
