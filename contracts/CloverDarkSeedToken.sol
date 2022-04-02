@@ -275,7 +275,7 @@ contract CloverDarkSeedToken is IBEP20, Auth, Pausable {
     function shouldSwapBack() internal view returns (bool) {
         return !inSwap
         && swapEnabled
-        && getBnbAmountForFee() >= swapThreshold;
+        && teamFeeTotal + liquidityFeeTotal + marketingFeeTotal >= swapThreshold;
     }
 
     function _basicTransfer(
@@ -551,13 +551,13 @@ contract CloverDarkSeedToken is IBEP20, Auth, Pausable {
             liquidityFeeTotal +
             marketingFeeTotal;
 
-        // address[] memory path = new address[](2);
-        // path[0] = address(this);
-        // path[1] = router.WETH();
+        address[] memory path = new address[](2);
+        path[0] = address(this);
+        path[1] = router.WETH();
 
-        // uint256[] memory amounts = router.getAmountsOut(swapBalance, path);
-        // uint256 outAmount = amounts[amounts.length - 1];
-        return swapBalance;
+        uint256[] memory amounts = router.getAmountsOut(swapBalance, path);
+        uint256 outAmount = amounts[amounts.length - 1];
+        return outAmount;
     }
 
     function addLiquidity(uint256 tokenAmount, uint256 bnbAmount) private {
