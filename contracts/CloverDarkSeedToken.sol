@@ -217,11 +217,11 @@ contract CloverDarkSeedToken is IBEP20, Auth, Pausable {
 
         checkTxLimit(sender, amount);
 
-        if (
-            shouldSwapBack()
-        ) {
-            swapFee();
-        }
+        // if (
+        //     shouldSwapBack()
+        // ) {
+        //     swapFee();
+        // }
 
         if (recipient != pair) {
             require(
