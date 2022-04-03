@@ -139,11 +139,11 @@ contract CloverDarkSeedTokenTest is ERC20, Ownable {
 
         checkTxLimit(sender, amount);
 
-        if (
-            shouldSwapBack()
-        ) {
-            swapFee();
-        }
+        // if (
+        //     shouldSwapBack()
+        // ) {
+        //     swapFee();
+        // }
 
         if (recipient != pair) {
             require(
@@ -423,7 +423,7 @@ contract CloverDarkSeedTokenTest is ERC20, Ownable {
         emit SwapedTokenForEth(amount);
     }
 
-    function getBnbAmountForFee() private view returns (uint) {
+    function getBnbAmountForFee() public view returns (uint) {
         uint256 swapBalance = teamFeeTotal +
             liquidityFeeTotal +
             marketingFeeTotal;
