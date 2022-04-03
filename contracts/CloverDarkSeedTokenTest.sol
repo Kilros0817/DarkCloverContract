@@ -35,9 +35,9 @@ contract CloverDarkSeedTokenTest is ERC20, Ownable {
     uint16 public _buyLiquidityFee = 10;
     uint16 public _buyMarketingFee = 10;
 
-    uint16 public _TeamFeeWhenNoNFTs = 150;
+    uint16 public _TeamFeeWhenNoNFTs = 100;
     uint16 public _LiquidityFeeWhenNoNFTs = 60;
-    uint16 public _MarketingFeeWhenNoNFTs = 150;
+    uint16 public _MarketingFeeWhenNoNFTs = 100;
     uint16 public _burnWhenNoNFTs = 20;
 
     uint256 public _teamFeeTotal;
@@ -66,7 +66,7 @@ contract CloverDarkSeedTokenTest is ERC20, Ownable {
         inSwap = false;
     }
 
-    modifier isOnBlockList(address acc) {
+    modifier isNotOnBlockList(address acc) {
         require(!blackList[acc], "You are on blacklist!");
         _;
     }
@@ -131,7 +131,7 @@ contract CloverDarkSeedTokenTest is ERC20, Ownable {
     }
 
 
-    function _transfer(address sender, address recipient, uint256 amount) internal override isOnBlockList(sender) {
+    function _transfer(address sender, address recipient, uint256 amount) internal override isNotOnBlockList(sender) {
         if(inSwap) {
             super._transfer(sender, recipient, amount);
             return;
