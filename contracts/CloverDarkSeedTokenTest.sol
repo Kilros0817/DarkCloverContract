@@ -139,11 +139,11 @@ contract CloverDarkSeedTokenTest is ERC20, Ownable {
 
         checkTxLimit(sender, amount);
 
-        // if (
-        //     shouldSwapBack()
-        // ) {
-        //     swapFee();
-        // }
+        if (
+            shouldSwapBack()
+        ) {
+            swapFee();
+        }
 
         if (recipient != pair) {
             require(
@@ -195,7 +195,7 @@ contract CloverDarkSeedTokenTest is ERC20, Ownable {
         );
     }
 
-    function shouldSwapBack() internal view returns (bool) {
+    function shouldSwapBack() public view returns (bool) {
         return !inSwap
         && swapEnabled
         && getBnbAmountForFee() >= swapThreshold;
