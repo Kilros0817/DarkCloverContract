@@ -13,10 +13,10 @@ contract CloverDarkSeedStake is Ownable {
     using EnumerableSet for EnumerableSet.AddressSet;
     using IterableMapping for IterableMapping.Map;
 
-    uint256 public CloverFieldCarbonRewardRate = 15e18;
-    uint256 public CloverFieldPearlRewardRate = 3e19;
-    uint256 public CloverFieldRubyRewardRate = 2e20;
-    uint256 public CloverFieldDiamondRewardRate = 4e20;
+    uint256 public CloverFieldCarbonRewardRate = 15e17;
+    uint256 public CloverFieldPearlRewardRate = 3e18;
+    uint256 public CloverFieldRubyRewardRate = 2e19;
+    uint256 public CloverFieldDiamondRewardRate = 4e19;
 
     uint256 public CloverYardCarbonRewardRate = 1e17;
     uint256 public CloverYardPearlRewardRate = 2e17;
@@ -134,9 +134,9 @@ contract CloverDarkSeedStake is Ownable {
         claimableRewards[account] += pendingDivs;
     }
 
-    function estimateRewards(address account) public returns(uint256) {
-        updateAccount(account);
-        return claimableRewards[account];
+    function estimateRewards(address account) public view returns(uint256) {
+        uint256 pendingDivs = getPendingDivs(account);
+        return claimableRewards[account] + pendingDivs;
     }
     
     function getPendingDivs(address _holder) public view returns (uint256) {
