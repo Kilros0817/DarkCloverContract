@@ -23,7 +23,7 @@ contract CloverDarkSeedNFT is ERC721, ERC721Enumerable, ERC721URIStorage, Pausab
 
     address public DarkSeedPicker;
 
-    constructor(address _DarkSeedToken) ERC721("Clover SEED$ NFT", "CSNFT") {
+    constructor(address _DarkSeedToken) ERC721("Clover DSEED$ NFT", "DCSNFT") {
         DarkSeedToken = _DarkSeedToken;
     }
     
@@ -115,6 +115,15 @@ contract CloverDarkSeedNFT is ERC721, ERC721Enumerable, ERC721URIStorage, Pausab
 
     function _burn(uint256 tokenId) internal override(ERC721, ERC721URIStorage) {
         super._burn(tokenId);
+    }
+
+    function burn(uint256 tokenId) public override {
+        tokenIndex[ownerNFTs[msg.sender][ownerNFTs[msg.sender].length - 1]] = tokenIndex[tokenId];
+        ownerNFTs[msg.sender][tokenIndex[tokenId]] = ownerNFTs[msg.sender][ownerNFTs[msg.sender].length - 1];
+        ownerNFTs[msg.sender].pop();
+        delete tokenIndex[tokenId];
+
+        super.burn(tokenId);
     }
 
     function tokenURI(uint256 tokenId)

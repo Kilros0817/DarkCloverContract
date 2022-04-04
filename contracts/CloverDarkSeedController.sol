@@ -245,7 +245,7 @@ contract CloverDarkSeedController is Ownable {
         uint256 liquidityFee = cloverPotPrice.div(1e3).mul(nftBuyFeeForLiquidity);
         uint256 marketingFee = cloverPotPrice.div(1e3).mul(nftBuyFeeForMarketing);
         uint256 teamFee = cloverPotPrice.div(1e3).mul(nftBuyFeeForTeam);
-        uint256 burnAmt = cloverYardPrice.div(1e3).mul(nftBuyBurn);
+        uint256 burnAmt = cloverPotPrice.div(1e3).mul(nftBuyBurn);
 
         if (isTeamAddress[msg.sender]) {
             cloverPotPrice = 0;
