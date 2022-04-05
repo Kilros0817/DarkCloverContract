@@ -120,25 +120,25 @@ contract CloverDarkSeedPicker is Ownable {
     function randomLayer(uint256 tokenId) public returns (bool) {
         require(msg.sender == DarkSeedNFT, "Clover_Seeds_Picker: You are not CloverDarkSeedNFT..");
         
-        uint16 num = uint8(rand >> 16 % 1000);
+        uint16 num = uint16((rand >> 16) % 1000);
         if (tokenId <= 1e3) {
             if (totalCloverFieldDiamondMinted == totalCloverFieldDiamond) {
-                num = uint16(num % 998) + 2;
+                num = num % 998 + 2;
             }
             if (totalCloverFieldCarbonMinted == totalCloverFieldCarbon) {
-                num = uint16(num % 506);
+                num = num % 506;
                 if (num >= 2 && num <= 495) {
                     num += 504;
                 }
             }
             if (totalCloverFieldPearlMinted == totalCloverFieldPearl) {
-                num = uint16(num % 506);
+                num = num % 506;
                 if (num >= 496 && num <= 505) {
                     num += 494;
                 }
             }
             if (totalCloverFieldRubyMinted == totalCloverFieldRuby) {
-                num = uint16(num % 990);
+                num = num % 990;
             }
 
             string memory uri;
@@ -166,22 +166,22 @@ contract CloverDarkSeedPicker is Ownable {
 
         } else if (tokenId <= 11e3) {
             if (totalCloverYardDiamondMinted == totalCloverYardDiamond) {
-                num = uint16(num % 998) + 2;
+                num = num % 998 + 2;
             }
             if (totalCloverYardCarbonMinted == totalCloverYardCarbon) {
-                num = uint16(num % 506);
+                num = num % 506;
                 if (num >= 2 && num <= 495) {
                     num += 504;
                 }
             }
             if (totalCloverYardPearlMinted == totalCloverYardPearl) {
-                num = uint16(num % 506);
+                num = num % 506;
                 if (num >= 495 && num <= 505) {
                     num += 494;
                 }
             }
             if (totalCloverYardRubyMinted == totalCloverYardRuby) {
-                num = uint16(num % 990);
+                num = num % 990;
             }
 
             string memory uri;
@@ -210,22 +210,22 @@ contract CloverDarkSeedPicker is Ownable {
 
         } else {
             if (totalCloverPotDiamondMinted == totalCloverPotDiamond) {
-                num = uint16(num % 998) + 2;
+                num = num % 998 + 2;
             }
             if (totalCloverPotCarbonMinted == totalCloverPotCarbon) {
-                num = uint16(num % 506);
+                num = num % 506;
                 if (num >= 2 && num <= 495) {
                     num += 504;
                 }
             }
             if (totalCloverPotPearlMinted == totalCloverPotPearl) {
-                num = uint8(num % 506);
+                num = num % 506;
                 if (num >= 496 && num <= 505) {
                     num += 494;
                 }
             }
             if (totalCloverPotRubyMinted == totalCloverPotRuby) {
-                num = uint8(num % 990);
+                num = num % 990;
             }
 
             string memory uri;
