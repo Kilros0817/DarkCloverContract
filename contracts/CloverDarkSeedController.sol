@@ -175,18 +175,15 @@ contract CloverDarkSeedController is Ownable {
         uint256 teamFee = cloverFieldPrice.div(1e3).mul(nftBuyFeeForTeam);
         uint256 burnAmt = cloverFieldPrice.div(1e3).mul(nftBuyBurn);
 
-        if (isTeamAddress[msg.sender]) {
-            cloverFieldPrice = 0;
-        }
-        
-        if (cloverFieldPrice > 0) {
-            IContract(CloverDarkSeedToken).burnForNFT(burnAmt);
-            IContract(CloverDarkSeedToken).Approve(address(this), cloverFieldPrice - burnAmt);
-            IContract(CloverDarkSeedToken).transferFrom(msg.sender, CloverDarkSeedToken, cloverFieldPrice - burnAmt);
-            IContract(CloverDarkSeedToken).AddFeeS(marketingFee, teamFee, liquidityFee);
+        if (!isTeamAddress[msg.sender]) {
+            if (cloverFieldPrice > 0) {
+                IContract(CloverDarkSeedToken).burnForNFT(burnAmt);
+                IContract(CloverDarkSeedToken).Approve(address(this), cloverFieldPrice - burnAmt);
+                IContract(CloverDarkSeedToken).transferFrom(msg.sender, CloverDarkSeedToken, cloverFieldPrice - burnAmt);
+                IContract(CloverDarkSeedToken).AddFeeS(marketingFee, teamFee, liquidityFee);
+            }
         }
         IContract(CloverDarkSeedNFT).mint(to, tokenId);
-
     }
 
     function buyCloverYard(uint256 entropy) public {
@@ -211,15 +208,14 @@ contract CloverDarkSeedController is Ownable {
         uint256 teamFee = cloverYardPrice.div(1e3).mul(nftBuyFeeForTeam);
         uint256 burnAmt = cloverYardPrice.div(1e3).mul(nftBuyBurn);
         
-        if (isTeamAddress[msg.sender]) {
-            cloverYardPrice = 0;
-        }
+        if (!isTeamAddress[msg.sender]) {
 
-        if (cloverYardPrice > 0) {
-            IContract(CloverDarkSeedToken).burnForNFT(burnAmt);
-            IContract(CloverDarkSeedToken).Approve(address(this), cloverYardPrice - burnAmt);
-            IContract(CloverDarkSeedToken).transferFrom(msg.sender, CloverDarkSeedToken, cloverYardPrice - burnAmt);
-            IContract(CloverDarkSeedToken).AddFeeS(marketingFee, teamFee, liquidityFee);
+            if (cloverYardPrice > 0) {
+                IContract(CloverDarkSeedToken).burnForNFT(burnAmt);
+                IContract(CloverDarkSeedToken).Approve(address(this), cloverYardPrice - burnAmt);
+                IContract(CloverDarkSeedToken).transferFrom(msg.sender, CloverDarkSeedToken, cloverYardPrice - burnAmt);
+                IContract(CloverDarkSeedToken).AddFeeS(marketingFee, teamFee, liquidityFee);
+            }
         }
         
         IContract(CloverDarkSeedNFT).mint(to, tokenId);
@@ -247,15 +243,13 @@ contract CloverDarkSeedController is Ownable {
         uint256 teamFee = cloverPotPrice.div(1e3).mul(nftBuyFeeForTeam);
         uint256 burnAmt = cloverPotPrice.div(1e3).mul(nftBuyBurn);
 
-        if (isTeamAddress[msg.sender]) {
-            cloverPotPrice = 0;
-        }
-
-        if (cloverPotPrice > 0) {
-            IContract(CloverDarkSeedToken).burnForNFT(burnAmt);
-            IContract(CloverDarkSeedToken).Approve(address(this), cloverPotPrice - burnAmt);
-            IContract(CloverDarkSeedToken).transferFrom(msg.sender, CloverDarkSeedToken, cloverPotPrice - burnAmt);
-            IContract(CloverDarkSeedToken).AddFeeS(marketingFee, teamFee, liquidityFee);
+        if (!isTeamAddress[msg.sender]) {
+            if (cloverPotPrice > 0) {
+                IContract(CloverDarkSeedToken).burnForNFT(burnAmt);
+                IContract(CloverDarkSeedToken).Approve(address(this), cloverPotPrice - burnAmt);
+                IContract(CloverDarkSeedToken).transferFrom(msg.sender, CloverDarkSeedToken, cloverPotPrice - burnAmt);
+                IContract(CloverDarkSeedToken).AddFeeS(marketingFee, teamFee, liquidityFee);
+            }
         }
         
         IContract(CloverDarkSeedNFT).mint(to, tokenId);
