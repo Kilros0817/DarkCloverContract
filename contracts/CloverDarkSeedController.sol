@@ -38,9 +38,9 @@ contract CloverDarkSeedController is Ownable {
     uint256 public cloverYardPrice = 1e19;
     uint256 public cloverPotPrice = 1e18;
 
-    uint8 public fieldPercentByPotion = 60;
-    uint8 public yardPercentByPotion = 38;
-    uint8 public potPercentByPotion = 2;
+    uint8 public fieldPercentByPotion = 2;
+    uint8 public yardPercentByPotion = 28;
+    uint8 public potPercentByPotion = 70;
 
     uint256 public tokenAmountForPoorPotion = 5e17;
     bool public isContractActivated = false;
