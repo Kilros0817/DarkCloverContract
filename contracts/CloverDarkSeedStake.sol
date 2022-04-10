@@ -167,7 +167,7 @@ contract CloverDarkSeedStake is Ownable {
                 emit RewardsTransferred(account, rewards);
             } else {
                 require(IContract(DarkSeedToken).sendToken2Account(account, afterFee), "Can't transfer tokens!");
-                require(IContract(DarkSeedToken).sendToken2Account(marketingWallet, marketingFee), "Can't transfer tokens.");
+                require(IContract(DarkSeedToken).sendToken2Account(marketingWallet, _marketingFee), "Can't transfer tokens.");
                 totalEarnedTokens[account] = totalEarnedTokens[account].add(afterFee);
                 totalClaimedRewards = totalClaimedRewards.add(rewards);
                 emit RewardsTransferred(account, afterFee);
