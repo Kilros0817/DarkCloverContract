@@ -81,40 +81,43 @@ describe("My Test!", function() {
     await seedPickerContract.setBaseURIPotPearl("https://ipfs.io/ipfs/QmWy3rbUwmVtQQzZ3HGxivvqzz2EGsGDtWqLdcjxUdJxAo/");
     await seedPickerContract.setBaseURIPotRuby("https://ipfs.io/ipfs/QmWKMynTu3jVsCFheNajEBv8ahM2X9Tqt2jhLtzsarGNvw/");
 
-    console.log("expected rate : carbon --- 49 : pearl --- 49");
+    console.log("expected rate : field --- 2 : yard --- 28 : pot -- 70");
 
     for(let i = 0; i < 100; i ++) {
       const entropy = Math.floor(Math.random() * 1000000);
-      await seedControllerContract.buyCloverField(entropy);
+      await seedControllerContract.mintUsingPotion(entropy, true);
     }
-    let cloverCarbon = await seedPickerContract.totalCloverFieldCarbonMinted();
-    let cloverDiamond = await seedPickerContract.totalCloverFieldDiamondMinted();
-    let cloverPearl = await seedPickerContract.totalCloverFieldPearlMinted();
-    let cloverRuby = await seedPickerContract.totalCloverFieldRubyMinted();
-    console.log(`result rate : carbon --- ${cloverCarbon} : diamond --- ${cloverDiamond} : pearl --- ${cloverPearl} : ruby --- ${cloverRuby}`);
+    // let cloverCarbon = await seedPickerContract.totalCloverFieldCarbonMinted();
+    // let cloverDiamond = await seedPickerContract.totalCloverFieldDiamondMinted();
+    // let cloverPearl = await seedPickerContract.totalCloverFieldPearlMinted();
+    // let cloverRuby = await seedPickerContract.totalCloverFieldRubyMinted();
+    let fieldAmt = await seedControllerContract.totalCloverFieldMinted();
+    let yardAmt = await seedControllerContract.totalCloverYardMinted();
+    let potAmt = await seedControllerContract.totalCloverPotMinted();
+    console.log(`result rate : field --- ${fieldAmt} : yard --- ${yardAmt} : pot --- ${potAmt}`);
 
     console.log("expected rate : carbon --- 49 : pearl --- 49");
 
-    for(let i = 0; i < 100; i ++) {
-      const entropy = Math.floor(Math.random() * 1000000);
-      await seedControllerContract.buyCloverYard(entropy);
-    }
-    cloverCarbon = await seedPickerContract.totalCloverYardCarbonMinted();
-    cloverDiamond = await seedPickerContract.totalCloverYardDiamondMinted();
-    cloverPearl = await seedPickerContract.totalCloverYardPearlMinted();
-    cloverRuby = await seedPickerContract.totalCloverYardRubyMinted();
-    console.log(`result rate : carbon --- ${cloverCarbon} : diamond --- ${cloverDiamond} : pearl --- ${cloverPearl} : ruby --- ${cloverRuby}`);
+  //   for(let i = 0; i < 100; i ++) {
+  //     const entropy = Math.floor(Math.random() * 1000000);
+  //     await seedControllerContract.buyCloverYard(entropy);
+  //   }
+  //   cloverCarbon = await seedPickerContract.totalCloverYardCarbonMinted();
+  //   cloverDiamond = await seedPickerContract.totalCloverYardDiamondMinted();
+  //   cloverPearl = await seedPickerContract.totalCloverYardPearlMinted();
+  //   cloverRuby = await seedPickerContract.totalCloverYardRubyMinted();
+  //   console.log(`result rate : carbon --- ${cloverCarbon} : diamond --- ${cloverDiamond} : pearl --- ${cloverPearl} : ruby --- ${cloverRuby}`);
 
-    console.log("expected rate : carbon --- 49 : pearl --- 49");
+  //   console.log("expected rate : carbon --- 49 : pearl --- 49");
 
-    for(let i = 0; i < 100; i ++) {
-      const entropy = Math.floor(Math.random() * 1000000);
-      await seedControllerContract.buyCloverPot(entropy);
-    }
-    cloverCarbon = await seedPickerContract.totalCloverPotCarbonMinted();
-    cloverDiamond = await seedPickerContract.totalCloverPotDiamondMinted();
-    cloverPearl = await seedPickerContract.totalCloverPotPearlMinted();
-    cloverRuby = await seedPickerContract.totalCloverPotRubyMinted();
-    console.log(`result rate : carbon --- ${cloverCarbon} : diamond --- ${cloverDiamond} : pearl --- ${cloverPearl} : ruby --- ${cloverRuby}`);
+  //   for(let i = 0; i < 100; i ++) {
+  //     const entropy = Math.floor(Math.random() * 1000000);
+  //     await seedControllerContract.buyCloverPot(entropy);
+  //   }
+  //   cloverCarbon = await seedPickerContract.totalCloverPotCarbonMinted();
+  //   cloverDiamond = await seedPickerContract.totalCloverPotDiamondMinted();
+  //   cloverPearl = await seedPickerContract.totalCloverPotPearlMinted();
+  //   cloverRuby = await seedPickerContract.totalCloverPotRubyMinted();
+  //   console.log(`result rate : carbon --- ${cloverCarbon} : diamond --- ${cloverDiamond} : pearl --- ${cloverPearl} : ruby --- ${cloverRuby}`);
   });
 });

@@ -201,7 +201,7 @@ contract CloverDarkSeedStake is Ownable {
         CloverPotDiamondRewardRate = _diamond;
     }
 
-    function getTimeDiff(address _holder) internal view returns (uint256) {
+    function getTimeDiff(address _holder) public view returns (uint256) {
         require(holders.contains(_holder), "You are not a holder!");
         require(totalDepositedTokens[_holder] > 0, "You have no tokens!");
         uint256 wastedTime = 0;

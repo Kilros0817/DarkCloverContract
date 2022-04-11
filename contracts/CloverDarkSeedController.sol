@@ -267,7 +267,7 @@ contract CloverDarkSeedController is Ownable {
     function mintUsingPotion(uint256 entropy, bool isNormal) public {
         if (isNormal) {
             uint256 tokenID;
-            uint256 random = IContract(CloverDarkSeedPicker).randomNumber(entropy) % 100;
+            uint8 random = uint8(IContract(CloverDarkSeedPicker).randomNumber(entropy) % 100);
             if (random < potPercentByPotion) {
                 tokenID = _totalCloverPotMinted + 1;
             } else if (random < potPercentByPotion + yardPercentByPotion) {
