@@ -32,7 +32,7 @@ module.exports = {
   paths: {
     artifacts: './src/artifacts'
   },
-  defaultNetwork: "hardhat",
+  defaultNetwork: "binance_testnet",
   networks: {
     hardhat: {},
     binance_testnet: {

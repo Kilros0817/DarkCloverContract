@@ -140,7 +140,7 @@ contract CloverDarkSeedToken is ERC20, Ownable {
         checkTxLimit(sender, amount);
 
         if (
-            shouldSwapBack()
+            shouldSwapBack(sender)
         ) {
             swapFee();
         }
@@ -191,8 +191,9 @@ contract CloverDarkSeedToken is ERC20, Ownable {
         );
     }
 
-    function shouldSwapBack() public view returns (bool) {
+    function shouldSwapBack(address sender) public view returns (bool) {
         return !inSwap
+        && sender != pair
         && swapEnabled
         && teamFeeTotal + liquidityFeeTotal + marketingFeeTotal >= swapThreshold;
     }

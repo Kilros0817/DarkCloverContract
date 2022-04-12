@@ -205,13 +205,15 @@ contract CloverDarkSeedStake is Ownable {
         require(holders.contains(_holder), "You are not a holder!");
         require(totalDepositedTokens[_holder] > 0, "You have no tokens!");
         uint256 wastedTime = 0;
-        if (block.timestamp - lastWatered[msg.sender] > waterInterval) {
-            wastedTime = block.timestamp - lastWatered[msg.sender] - waterInterval;
+        if (block.timestamp - lastWatered[_holder] > waterInterval) {
+            wastedTime = block.timestamp - lastWatered[_holder] - waterInterval;
         } 
-        uint256 timeDiff = block.timestamp.sub(lastClaimedTime[_holder]);
+        uint256 timeDiff = block.timestamp - lastClaimedTime[_holder];
         if (timeDiff > wastedTime) {
             timeDiff -= wastedTime;
-        } 
+        } else {
+            timeDiff = 0;
+        }
         return timeDiff;
     }
 

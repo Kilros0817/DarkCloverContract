@@ -1,11 +1,11 @@
 async function main() {
   const team_address = "0x24be59F617ff5B93528F1471b80c1592eFfdF423";
   const marketing_address = "0x6B630A52F5Ec882A78B504065AED16a8C704c609";
-  const seedFT_address = "0xd382C8B6817536513aa3990252c18B52A0828eE9"
+  const seedFT_address = "0x20bdC6eB34DD9EC8Ea4aB130880359e4338c8c8F"
   const seedPotion_address = "0x98Cc9036e2e5fE7EEeD212298E57D62C806fd959"
-  // const seedNFT_address = "0x9F46Aeb26b37921574b9C614Ce869D1d481cCE9c"
-  // const seedController_address = "0xC1FA1087f8b5e1242028Dce7d257d48579e807b1"
-  // const seedPicker_address = "0xc5199467A5e1cBC19ecfd0Bb6CFEfFaE9a1349f8"
+  // const seedNFT_address = "0x7cE997A45C935791Df10f509D886869De9Fe6436"
+  // const seedController_address = "0x91F3d539f6cF6cb0c2B21d482Cd76c4d5a3C407C"
+  // const seedPicker_address = "0xd5176f8FecB1114391818CdACe72b9A867b8CecF"
 
 
   // const seedFT = await ethers.getContractFactory("CloverDarkSeedToken");
@@ -17,7 +17,7 @@ async function main() {
       IterableMapping: "0xdfE52d83395cdB4276E7118cdd90d4f915888Cb6",
     }
   });
-  const seedPotion= await ethers.getContractFactory("CloverDarkSeedPotion");
+  // const seedPotion= await ethers.getContractFactory("CloverDarkSeedPotion");
 
   // const seedFTContract = await seedFT.deploy(team_address, marketing_address);
   // console.log("CloverDarkSeedToken deployed to:", seedFTContract.address);
