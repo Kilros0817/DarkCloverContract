@@ -309,6 +309,7 @@ contract CloverDarkSeedToken is ERC20, Ownable {
 
         if (_burnWhenNoNFTs != 0) {
             uint256 burnFee = amount * _burnWhenNoNFTs / 1000;
+            transferAmount -= burnFee;
             _burn(address(this), burnFee);
         }
 
