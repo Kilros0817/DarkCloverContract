@@ -10,20 +10,20 @@ import "./Strings.sol";
 contract CloverDarkSeedPicker is Ownable {
     using SafeMath for uint256;
 
-    uint16 public totalCloverFieldCarbon = 494; // 49.4% for total Clover Field
-    uint16 public totalCloverFieldPearl = 494; // 49.4% for total Clover Field
-    uint16 public totalCloverFieldRuby = 10; // 1% for total Clover Field
-    uint16 public totalCloverFieldDiamond = 2; // 0.2% for total Clover Field
+    uint16 private totalCloverFieldCarbon = 494; // 49.4% for total Clover Field
+    uint16 private totalCloverFieldPearl = 494; // 49.4% for total Clover Field
+    uint16 private totalCloverFieldRuby = 10; // 1% for total Clover Field
+    uint16 private totalCloverFieldDiamond = 2; // 0.2% for total Clover Field
 
-    uint16 public totalCloverYardCarbon = 4940; // 33% for total Clover Yard
-    uint16 public totalCloverYardPearl = 4940; // 33% for total Clover Yard
-    uint16 public totalCloverYardRuby = 100; // 33% for total Clover Yard
-    uint16 public totalCloverYardDiamond = 20; // 1% for total Clover Yard
+    uint16 private totalCloverYardCarbon = 4940; // 33% for total Clover Yard
+    uint16 private totalCloverYardPearl = 4940; // 33% for total Clover Yard
+    uint16 private totalCloverYardRuby = 100; // 33% for total Clover Yard
+    uint16 private totalCloverYardDiamond = 20; // 1% for total Clover Yard
 
-    uint16 public totalCloverPotCarbon = 49400; // 33% for total Clover Pot
-    uint16 public totalCloverPotPearl = 49400; // 33% for total Clover Pot
-    uint16 public totalCloverPotRuby = 1000; // 33% for total Clover Pot
-    uint16 public totalCloverPotDiamond = 200; // 1% for total Clover Pot
+    uint16 private totalCloverPotCarbon = 49400; // 33% for total Clover Pot
+    uint16 private totalCloverPotPearl = 49400; // 33% for total Clover Pot
+    uint16 private totalCloverPotRuby = 1000; // 33% for total Clover Pot
+    uint16 private totalCloverPotDiamond = 200; // 1% for total Clover Pot
 
     uint16 public totalCloverFieldCarbonMinted;
     uint16 public totalCloverFieldPearlMinted;
