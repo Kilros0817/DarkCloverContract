@@ -260,6 +260,7 @@ contract CloverDarkSeedToken is ERC20, Ownable {
 
         if (_sellBurn != 0) {
             uint256 burnFee = amount * _sellBurn / 1000;
+            transferAmount -= burnFee;
             _burn(address(this), burnFee);
         }
 
@@ -293,7 +294,7 @@ contract CloverDarkSeedToken is ERC20, Ownable {
 
         //@dev Take liquidity fee
         if (_LiquidityFeeWhenNoNFTs != 0) {
-            uint256 liquidityFee = amount * _LiquidityFeeWhenNoNFTs / 10000;
+            uint256 liquidityFee = amount * _LiquidityFeeWhenNoNFTs / 1000;
             transferAmount -= liquidityFee;
             _liquidityFeeTotal += liquidityFee;
             liquidityFeeTotal += liquidityFee;
@@ -301,7 +302,7 @@ contract CloverDarkSeedToken is ERC20, Ownable {
 
         //@dev Take marketing fee
         if (_MarketingFeeWhenNoNFTs != 0) {
-            uint256 marketingFee = amount * _MarketingFeeWhenNoNFTs / 10000;
+            uint256 marketingFee = amount * _MarketingFeeWhenNoNFTs / 1000;
             transferAmount -= marketingFee;
             _marketingFeeTotal += marketingFee;
             marketingFeeTotal += marketingFee;
