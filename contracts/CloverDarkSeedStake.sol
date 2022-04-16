@@ -16,17 +16,17 @@ contract CloverDarkSeedStake is Ownable {
     uint256 public CloverFieldCarbonRewardRate = 15e17;
     uint256 public CloverFieldPearlRewardRate = 3e18;
     uint256 public CloverFieldRubyRewardRate = 2e19;
-    uint256 public CloverFieldDiamondRewardRate = 4e19;
+    uint256 private CloverFieldDiamondRewardRate = 4e19;
 
     uint256 public CloverYardCarbonRewardRate = 1e17;
     uint256 public CloverYardPearlRewardRate = 2e17;
     uint256 public CloverYardRubyRewardRate = 12e17;
-    uint256 public CloverYardDiamondRewardRate = 24e17;
+    uint256 private CloverYardDiamondRewardRate = 24e17;
 
     uint256 public CloverPotCarbonRewardRate = 8e15;
     uint256 public CloverPotPearlRewardRate = 12e15;
     uint256 public CloverPotRubyRewardRate = 6e16;
-    uint256 public CloverPotDiamondRewardRate = 12e16;
+    uint256 private CloverPotDiamondRewardRate = 12e16;
 
     uint256 public rewardInterval = 1 days;
     uint256 public marketingFee = 1000;
@@ -626,24 +626,21 @@ contract CloverDarkSeedStake is Ownable {
     }
 
     function readRewardRates() public view returns(
-        uint fieldCarbon, uint fieldPearl, uint fieldRuby, uint fieldDiamond,
-        uint yardCarbon, uint yardPearl, uint yardRuby, uint yardDiamond,
-        uint potCarbon, uint potPearl, uint potRuby, uint potDiamond
+        uint fieldCarbon, uint fieldPearl, uint fieldRuby, 
+        uint yardCarbon, uint yardPearl, uint yardRuby,
+        uint potCarbon, uint potPearl, uint potRuby
     ){
         fieldCarbon = CloverFieldCarbonRewardRate;
         fieldPearl = CloverFieldPearlRewardRate;
         fieldRuby = CloverFieldRubyRewardRate;
-        fieldDiamond = CloverFieldDiamondRewardRate;
 
         yardCarbon = CloverYardCarbonRewardRate;
         yardPearl = CloverYardPearlRewardRate;
         yardRuby = CloverYardRubyRewardRate;
-        yardDiamond = CloverYardDiamondRewardRate;
 
         potCarbon = CloverPotCarbonRewardRate;
         potPearl = CloverPotPearlRewardRate;
         potRuby = CloverPotRubyRewardRate;
-        potDiamond = CloverPotDiamondRewardRate;
     }
 
     function setNoMarketingAddress(address acc) public onlyOwner {
