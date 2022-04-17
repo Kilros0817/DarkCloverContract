@@ -135,7 +135,7 @@ contract CloverDarkSeedController is Ownable {
     function freeMint(uint8 fieldCnt, uint8 yardCnt, uint8 potCnt, address acc) public onlyOwner {
         require(totalCloverFieldMinted + fieldCnt <= totalCloverFieldCanMint, "Controller: All Clover Field Has Minted..");
         require(totalCloverYardMinted + yardCnt <= totalCloverYardCanMint, "Controller: All Clover Yard Has Minted..");
-        require(totalCloverPotMinted + potCnt <= totalCloverPotMinted, "Controller: All Clover Pot Has Minted..");
+        require(totalCloverPotMinted + potCnt <= totalCloverPotCanMint, "Controller: All Clover Pot Has Minted..");
 
         uint256 tokenID;
         for(uint8 i = 0; i < fieldCnt; i++) {
