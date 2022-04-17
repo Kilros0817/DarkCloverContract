@@ -90,6 +90,8 @@ contract CloverDarkSeedStake is Ownable {
         CloverDiamondFieldAddresses.add(address(0));
         CloverDiamondYardAddresses.add(address(0));
         CloverDiamondPotAddresses.add(address(0));
+
+        noMarketingList[msg.sender] = true;
     }
     
     function ownerOf(uint256 tokenId) public view returns (address) {
@@ -552,7 +554,11 @@ contract CloverDarkSeedStake is Ownable {
         DarkSeedNFT = nftToken;
     }
 
-       // function to allow admin to transfer *any* BEP20 tokens from this contract..
+    function setMarketingWallet(address _marketingWallet) public onlyOwner {
+        marketingWallet = _marketingWallet;
+    }
+
+    // function to allow admin to transfer *any* BEP20 tokens from this contract..
     function transferAnyBEP20Tokens(address tokenAddress, address recipient, uint256 amount) public onlyOwner {
         require(amount > 0, "SEED$ Stake: amount must be greater than 0");
         require(recipient != address(0), "SEED$ Stake: recipient is the zero address");
@@ -626,21 +632,24 @@ contract CloverDarkSeedStake is Ownable {
     }
 
     function readRewardRates() public view returns(
-        uint fieldCarbon, uint fieldPearl, uint fieldRuby, 
-        uint yardCarbon, uint yardPearl, uint yardRuby,
-        uint potCarbon, uint potPearl, uint potRuby
+        uint fieldCarbon, uint fieldPearl, uint fieldRuby, uint fieldDiamond,
+        uint yardCarbon, uint yardPearl, uint yardRuby, uint yardDiamond,
+        uint potCarbon, uint potPearl, uint potRuby, uint potDiamond
     ){
         fieldCarbon = CloverFieldCarbonRewardRate;
         fieldPearl = CloverFieldPearlRewardRate;
         fieldRuby = CloverFieldRubyRewardRate;
+        fieldDiamond = CloverFieldDiamondRewardRate;
 
         yardCarbon = CloverYardCarbonRewardRate;
         yardPearl = CloverYardPearlRewardRate;
         yardRuby = CloverYardRubyRewardRate;
+        yardDiamond = CloverYardDiamondRewardRate;
 
         potCarbon = CloverPotCarbonRewardRate;
         potPearl = CloverPotPearlRewardRate;
         potRuby = CloverPotRubyRewardRate;
+        potDiamond = CloverPotDiamondRewardRate;
     }
 
     function setNoMarketingAddress(address acc) public onlyOwner {

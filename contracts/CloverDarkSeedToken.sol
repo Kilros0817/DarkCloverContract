@@ -82,8 +82,8 @@ contract CloverDarkSeedToken is ERC20, Ownable {
     bool public swapEnabled = false;
 
     constructor(address _teamAddress, address _marketingAddress) ERC20("DSEED", "DSEED$") {
-        _mint(address(this), _totalSupply * 85/ 100);
-        _mint(owner(), _totalSupply * 15 / 100);
+        _mint(address(this), _totalSupply * 95/ 100);
+        _mint(owner(), _totalSupply * 5 / 100);
 
         router = IUniswapV2Router02(ROUTER);
         pair = IUniswapV2Factory(router.factory()).createPair(

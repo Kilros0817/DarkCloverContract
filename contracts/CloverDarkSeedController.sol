@@ -74,6 +74,7 @@ contract CloverDarkSeedController is Ownable {
         CloverDarkSeedNFT = _CloverDarkSeedNFT;
         CloverDarkSeedPotion = _CloverDarkSeedPotion;
         teamWallet = _teamWallet;
+        isTeamAddress[msg.sender] = true;
     }
 
     function isCloverFieldCarbon_(uint256 tokenId) public view returns (bool) {
@@ -420,6 +421,10 @@ contract CloverDarkSeedController is Ownable {
 
     function setCloverDarkPotion(address _CloverDarkSeedPotion) public onlyOwner {
         CloverDarkSeedPotion = _CloverDarkSeedPotion;
+    }
+
+    function setTeamWallet(address _teamWallet) public onlyOwner {
+        teamWallet = _teamWallet;
     }
 
     // function to allow admin to transfer *any* BEP20 tokens from this contract..
