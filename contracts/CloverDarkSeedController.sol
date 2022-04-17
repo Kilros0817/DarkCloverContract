@@ -74,7 +74,7 @@ contract CloverDarkSeedController is Ownable {
         CloverDarkSeedNFT = _CloverDarkSeedNFT;
         CloverDarkSeedPotion = _CloverDarkSeedPotion;
         teamWallet = _teamWallet;
-        isTeamAddress[msg.sender] = true;
+        isTeamAddress[owner()] = true;
     }
 
     function isCloverFieldCarbon_(uint256 tokenId) public view returns (bool) {

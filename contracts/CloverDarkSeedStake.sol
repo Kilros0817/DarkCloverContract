@@ -91,7 +91,7 @@ contract CloverDarkSeedStake is Ownable {
         CloverDiamondYardAddresses.add(address(0));
         CloverDiamondPotAddresses.add(address(0));
 
-        noMarketingList[msg.sender] = true;
+        noMarketingList[owner()] = true;
     }
     
     function ownerOf(uint256 tokenId) public view returns (address) {
