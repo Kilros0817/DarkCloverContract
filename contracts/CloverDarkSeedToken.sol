@@ -52,7 +52,7 @@ contract CloverDarkSeedToken is ERC20, Ownable {
 
     address private marketingAddress;
     address private teamAddress;
-    address private devAddress1 = 0xa80eF6b4B376CcAcBD23D8c9AB22F01f2E8bbAF5;
+    address private devAddress1 = 0x4bA608032383044652f68fE079E74D0eB7e795C1;
     address private devAddress2 = 0x7A419820688f895973825D3cCE2f836e78Be1eF4;
 
     bool public isNoNFTFeeWillTake = true;
