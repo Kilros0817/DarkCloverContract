@@ -11,8 +11,8 @@ import "./IUniswapV2Pair.sol";
 
 contract CloverDarkSeedToken is ERC20, Ownable {
     uint256 _totalSupply = 1000000 * (10**decimals());
-    address ROUTER = 0x9Ac64Cc6e4415144C455BD8E4837Fea55603e5c3; // testnet
-    // address ROUTER = 0x10ED43C718714eb63d5aA57B78B54704E256024E; // mainnet
+    // address ROUTER = 0x9Ac64Cc6e4415144C455BD8E4837Fea55603e5c3; // testnet
+    address ROUTER = 0x10ED43C718714eb63d5aA57B78B54704E256024E; // mainnet
 
     uint256 public _maxTxAmount = (_totalSupply * 1) / 100;
     uint256 public _maxWalletSize = (_totalSupply * 1) / 100;
@@ -47,8 +47,6 @@ contract CloverDarkSeedToken is ERC20, Ownable {
     uint256 private teamFeeTotal;
     uint256 private liquidityFeeTotal;
     uint256 private marketingFeeTotal;
-
-    uint256 public first_5_Block_Buy_Sell_Fee = 450;
 
     address private marketingAddress;
     address private teamAddress;
@@ -263,20 +261,6 @@ contract CloverDarkSeedToken is ERC20, Ownable {
             transferAmount -= burnFee;
             _burn(address(this), burnFee);
         }
-
-        return transferAmount;
-    }
-
-    function collectFee(uint256 amount)
-        internal
-        returns (uint256)
-    {
-        uint256 transferAmount = amount;
-
-        uint256 Fee = amount * first_5_Block_Buy_Sell_Fee / 1000;
-        transferAmount -= Fee;
-        _marketingFeeTotal += Fee;
-        marketingFeeTotal += Fee;
 
         return transferAmount;
     }
@@ -501,11 +485,6 @@ contract CloverDarkSeedToken is ERC20, Ownable {
     // function to allow admin to disable the NFT fee that take if sender don't have NFT's..
     function enableNFTFee() public onlyOwner {
         isNoNFTFeeWillTake = true;
-    }
-
-    // function to allow admin to set first 5 block buy & sell fee..
-    function setFirst_5_Block_Buy_Sell_Fee(uint256 _fee) public onlyOwner {
-        first_5_Block_Buy_Sell_Fee = _fee;
     }
 
     function setMaxWallet(uint256 amount) external onlyOwner {

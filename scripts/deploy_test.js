@@ -1,5 +1,5 @@
-const team_address = "0x24be59F617ff5B93528F1471b80c1592eFfdF423";
-const marketing_address = "0x6B630A52F5Ec882A78B504065AED16a8C704c609";
+const team_address = "0xD8B3aE82310BF95874ea8B0D5831Bd2B0744DFdD";
+const marketing_address = "0x4fDF2017Cb4f73Ba03CA6BD823dDEcDf163C3b29";
 
 async function main() {
 
@@ -12,7 +12,7 @@ async function main() {
 
   // const seedStake= await ethers.getContractFactory("Clover_Seeds_Stake" ,{
   //     libraries: {
-  //     IterableMapping: "0xdfE52d83395cdB4276E7118cdd90d4f915888Cb6",
+  //     IterableMapping: "0x267f604461E0D879d46B328fa70e95A0298be8A3",
   //   }
   // });
   // const seedStakeContract = await seedStake.deploy(marketing_address
