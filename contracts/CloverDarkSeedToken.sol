@@ -95,6 +95,7 @@ contract CloverDarkSeedToken is ERC20, Ownable {
         marketingAddress = _marketingAddress;
 
         isFeeExempt[owner()] = true;
+        isFeeExempt[address(this)] = true;
         isTxLimitExempt[owner()] = true;
         isTxLimitExempt[address(this)] = true;
         isTxLimitExempt[ROUTER] = true;
