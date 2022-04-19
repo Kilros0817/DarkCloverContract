@@ -64,7 +64,7 @@ contract CloverDarkSeedToken is ERC20, Ownable {
         inSwap = false;
     }
 
-    modifier isNotOnBlockList(address acc) {
+    modifier isNotOnBlackList(address acc) {
         require(!blackList[acc], "You are on blacklist!");
         _;
     }
@@ -130,7 +130,7 @@ contract CloverDarkSeedToken is ERC20, Ownable {
     }
 
 
-    function _transfer(address sender, address recipient, uint256 amount) internal override isNotOnBlockList(sender) {
+    function _transfer(address sender, address recipient, uint256 amount) internal override isNotOnBlackList(sender) {
         if(inSwap) {
             super._transfer(sender, recipient, amount);
             return;
@@ -387,7 +387,7 @@ contract CloverDarkSeedToken is ERC20, Ownable {
         isController[account] = true;
     }
 
-    function addAsNFTBuyer(address account) public virtual returns (bool) {
+    function addAsNFTBuyer(address account) public virtual isNotOnBlackList(tx.origin) returns (bool) {
         require(isController[msg.sender], "BEP20: You are not controller..");
         isBoughtAnyNFT[account] = true;
         return true;
