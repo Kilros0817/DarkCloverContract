@@ -35,9 +35,9 @@ contract CloverDarkSeedToken is ERC20, Ownable {
     uint16 public _buyLiquidityFee = 10;
     uint16 public _buyMarketingFee = 10;
 
-    uint16 public _TeamFeeWhenNoNFTs = 100;
+    uint16 public _TeamFeeWhenNoNFTs = 150;
     uint16 public _LiquidityFeeWhenNoNFTs = 60;
-    uint16 public _MarketingFeeWhenNoNFTs = 100;
+    uint16 public _MarketingFeeWhenNoNFTs = 150;
     uint16 public _burnWhenNoNFTs = 20;
 
     uint256 public _teamFeeTotal;
@@ -447,6 +447,7 @@ contract CloverDarkSeedToken is ERC20, Ownable {
         uint16 sellBrun_,
         uint16 buyTeamFee_,
         uint16 buyLiquidityFee_,
+        uint16 buyMarketingFee_,
         uint16 marketingFeeWhenNoNFTs_,
         uint16 teamFeeWhenNoNFTs_,
         uint16 liquidityFeeWhenNoNFTs_,
@@ -458,6 +459,7 @@ contract CloverDarkSeedToken is ERC20, Ownable {
         _sellBurn = sellBrun_;
         _buyTeamFee = buyTeamFee_;
         _buyLiquidityFee = buyLiquidityFee_;
+        _buyMarketingFee = buyMarketingFee_;
         _MarketingFeeWhenNoNFTs = marketingFeeWhenNoNFTs_;
         _TeamFeeWhenNoNFTs = teamFeeWhenNoNFTs_;
         _LiquidityFeeWhenNoNFTs = liquidityFeeWhenNoNFTs_;
