@@ -139,17 +139,17 @@ contract CloverDarkSeedController is Ownable {
 
         uint256 tokenID;
         for(uint8 i = 0; i < fieldCnt; i++) {
-            IContract(CloverDarkSeedPicker).randomNumber(block.timestamp);
+            IContract(CloverDarkSeedPicker).randomNumber(i);
             tokenID = totalCloverFieldMinted + 1;
             IContract(CloverDarkSeedNFT).mint(acc, tokenID);
         } 
         for(uint8 i = 0; i < yardCnt; i++) {
-            IContract(CloverDarkSeedPicker).randomNumber(block.timestamp);
+            IContract(CloverDarkSeedPicker).randomNumber(i + fieldCnt);
             tokenID = _totalCloverYardMinted + 1;
             IContract(CloverDarkSeedNFT).mint(acc, tokenID);
         }  
         for(uint8 i = 0; i < potCnt; i++) {
-            IContract(CloverDarkSeedPicker).randomNumber(block.timestamp);
+            IContract(CloverDarkSeedPicker).randomNumber(i + fieldCnt + yardCnt);
             tokenID = _totalCloverPotMinted + 1;
             IContract(CloverDarkSeedNFT).mint(acc, tokenID);
         }      
