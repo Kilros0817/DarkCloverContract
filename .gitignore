@@ -5,6 +5,7 @@ coverage.json
 typechain
 autocommit.yml
 LAST_UPDATED
+torsg.sh
 
 #Hardhat files
 cache
